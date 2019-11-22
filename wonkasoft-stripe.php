@@ -35,6 +35,13 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
+define( 'WONKASOFT_STRIPE_PATH', plugin_dir_path( __FILE__ ) );
+define( 'WONKASOFT_STRIPE_URL', plugin_dir_url( __FILE__ ) );
+define( 'WONKASOFT_STRIPE_SLUG', plugin_basename( dirname( __FILE__ ) ) );
+define( 'WONKASOFT_STRIPE_FULLNAME', 'Wonkasoft Stripe Integration' );
+define( 'WONKASOFT_STRIPE_NAME', 'Stripe Integration' );
+define( 'WONKASOFT_STRIPE_BASENAME', plugin_basename( __FILE__ ) );
+define( 'WONKASOFT_STRIPE_IMG_PATH', plugins_url( WONKASOFT_STRIPE_SLUG . '/admin/img' ) );
 define( 'WONKASOFT_STRIPE_VERSION', '1.0.0' );
 
 /**

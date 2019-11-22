@@ -44,13 +44,13 @@ class Wonkasoft_Stripe_Admin {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param      string $plugin_name       The name of this plugin.
+	 * @param      string $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		$this->version     = $version;
 
 	}
 
@@ -98,6 +98,35 @@ class Wonkasoft_Stripe_Admin {
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-admin.js', array( 'jquery' ), $this->version, false );
 
+	}
+
+
+	/**
+	 *
+	 */
+	public function init_wonkasoft_stripe_gateway() {
+
+		/**
+		 * The class responsible for defining wonkasoft stripe gateway.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wc-gateway-wonkasoft-stripe-gateway.php';
+
+		/**
+		 * This sets the namespace for the Stripe Api.
+		 */
+
+		// require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/stripe-api/Stripe.php';
+	}
+
+	/**
+	 * Register Woocommerce gateway.
+	 *
+	 * @since 1.0.0
+	 */
+	public function add_wonkasoft_stripe_gateway( $methods ) {
+		$methods[] = 'WC_Gateway_Wonkasoft_Stripe_Gateway';
+
+		return $methods;
 	}
 
 }

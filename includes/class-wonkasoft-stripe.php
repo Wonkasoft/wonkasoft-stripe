@@ -156,6 +156,8 @@ class Wonkasoft_Stripe {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'init_wonkasoft_stripe_gateway' );
+		$this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_admin, 'add_wonkasoft_stripe_gateway' );
 
 	}
 
