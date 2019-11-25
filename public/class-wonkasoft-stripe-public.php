@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The public-facing functionality of the plugin.
  *
@@ -44,13 +43,13 @@ class Wonkasoft_Stripe_Public {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param      string $plugin_name       The name of the plugin.
+	 * @param      string $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+		$this->version     = $version;
 
 	}
 
@@ -100,4 +99,20 @@ class Wonkasoft_Stripe_Public {
 
 	}
 
+	/**
+	 * Add Stipe Buttons
+	 *
+	 * @since 1.0.0
+	 */
+	public function add_wonkasoft_stripe_buttons() {
+		$stripe         = new WC_Gateway_Wonkasoft_Stripe_Gateway();
+		$stripe_enabled = $stripe->get_option( 'enabled' );
+
+		if ( 'yes' === $stripe_enabled || true === $stripe_enabled ) {
+			$output  = '<button type="button" id="apple-pay-btn" class="btn wonka-btn">';
+			$output .= '<span class="logo"><img src="' . WONKASOFT_STRIPE_IMG_PATH_PUBLIC . '/applepay.svg" width="50"></span>';
+			$output .= '</button>';
+			echo $output;
+		}
+	}
 }
