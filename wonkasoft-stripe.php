@@ -42,6 +42,7 @@ define( 'WONKASOFT_STRIPE_FULLNAME', 'Wonkasoft Stripe Integration' );
 define( 'WONKASOFT_STRIPE_NAME', 'Stripe Integration' );
 define( 'WONKASOFT_STRIPE_BASENAME', plugin_basename( __FILE__ ) );
 define( 'WONKASOFT_STRIPE_IMG_PATH', plugins_url( WONKASOFT_STRIPE_SLUG . '/admin/img' ) );
+define( 'WONKASOFT_STRIPE_IMG_PATH_PUBLIC', plugins_url( WONKASOFT_STRIPE_SLUG . '/public/img' ) );
 define( 'WONKASOFT_STRIPE_VERSION', '1.0.0' );
 
 /**

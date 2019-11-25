@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The file that defines the core plugin class
  *
@@ -175,6 +174,7 @@ class Wonkasoft_Stripe {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'wonka_checkout_express_btns', $plugin_public, 'add_wonkasoft_stripe_buttons' );
 
 	}
 

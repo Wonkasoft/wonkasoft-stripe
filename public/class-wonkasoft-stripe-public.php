@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The public-facing functionality of the plugin.
  *
@@ -100,4 +99,20 @@ class Wonkasoft_Stripe_Public {
 
 	}
 
+	/**
+	 * Add Stipe Buttons
+	 *
+	 * @since 1.0.0
+	 */
+	public function add_wonkasoft_stripe_buttons() {
+		$stripe         = new WC_Gateway_Wonkasoft_Stripe_Gateway();
+		$stripe_enabled = $stripe->get_option( 'enabled' );
+
+		if ( 'yes' === $stripe_enabled || true === $stripe_enabled ) {
+			$output  = '<button type="button" id="apple-pay-btn" class="btn wonka-btn">';
+			$output .= '<span class="logo"><img src="' . WONKASOFT_STRIPE_IMG_PATH_PUBLIC . '/applepay.svg" width="50"></span>';
+			$output .= '</button>';
+			echo $output;
+		}
+	}
 }
