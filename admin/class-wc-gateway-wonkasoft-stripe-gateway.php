@@ -59,8 +59,13 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 		$this->init_form_fields();
 		$this->init_settings();
 		$this->title = $this->get_option( 'title' );
+		$this->test  = get_option( $this->form_fields['select_mode']['options'] );
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+
+	}
+
+	public function init_form_fields() {
 
 		$this->form_fields = array(
 			'enabled'                 => array(
@@ -91,8 +96,8 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 				'label'       => __( 'Select Live or Sandbox Modes', 'wonkasoft-stripe' ),
 				'description' => __( 'Place the payment gateway in test mode using test API keys.', 'wonkasoft-stripe' ),
 				'options'     => array(
-					'test_mode' => 'Test Sandbox Mode',
-					'live_mode' => 'Live Mode',
+					'sandbox_mode' => __( 'Sandbox', 'wonkasoft-stripe' ),
+					'live_mode'    => __( 'Live', 'wonkasoft-stripe' ),
 				),
 				'default'     => array(),
 				'desc_tip'    => true,
@@ -175,7 +180,7 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 		);
 	}
 
-	function process_payment( $order_id ) {
+	public function process_payment( $order_id ) {
 		global $woocommerce;
 		$order = new WC_Order( $order_id );
 
