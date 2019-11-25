@@ -52,16 +52,17 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	public function __construct() {
 
 		$this->id                 = 'wonkasoft_stripe';
-		$this->icon               = plugin_dir_path( dirname( __FILE__ ) ) . 'admin/img/ws-stripe-preview.jpg';
+		$this->icon               = WONKASOFT_STRIPE_URL . 'admin/img/ws-stripe-preview.jpg';
 		$this->has_fields         = true;
 		$this->method_title       = 'Stripe Payments Express';
 		$this->method_description = 'Add express payment options for your customers by the power of Stripe.';
 		$this->init_form_fields();
 		$this->init_settings();
 		$this->title = $this->get_option( 'title' );
+		$this->test  = get_option( $this->form_fields['select_mode']['options'] );
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-
+		$this->parse_buttons_on_hook();
 	}
 
 	/**
@@ -98,8 +99,8 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 				'label'       => __( 'Select Live or Sandbox Modes', 'wonkasoft-stripe' ),
 				'description' => __( 'Place the payment gateway in test mode using test API keys.', 'wonkasoft-stripe' ),
 				'options'     => array(
-					'test_mode' => 'Test Sandbox Mode',
-					'live_mode' => 'Live Mode',
+					'sandbox_mode' => __( 'Sandbox', 'wonkasoft-stripe' ),
+					'live_mode'    => __( 'Live', 'wonkasoft-stripe' ),
 				),
 				'default'     => array(),
 				'desc_tip'    => true,
@@ -128,16 +129,6 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 				'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
 				'desc_tip'    => true,
 			),
-
-			'enabled_request_buttons' => array(
-				'title'       => __( 'Payment Request Buttons', 'wonkasoft-stripe' ),
-				'type'        => 'checkbox',
-				'description' => __( 'If enabled, users will be able to pay using Apple Pay or Chrome Payment Request if supported by the browser.', 'wonkasoft-stripe' ),
-				'label'       => __( "Enable Payment Request Buttons. (Apple Pay/Chrome Payment Request API) By using Apple Pay, you agree to <a href='https://stripe.com/apple-pay/legal' target='_blank'>Stripe</a> and <a href='https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/' target='_blank'>Apple's</a> terms of service", 'wonkasoft-stripe' ),
-				'default'     => '',
-				'desc_tip'    => true,
-			),
-
 			'live_publishable_key'    => array(
 				'title'       => __( 'Live Publishable Key', 'wonkasoft-stripe' ),
 				'type'        => 'text',
@@ -162,7 +153,22 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 				'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
 				'desc_tip'    => true,
 			),
-
+			'button_placement'        => array(
+				'title'       => __( 'Hook for button placement', 'wonkasoft-stripe' ),
+				'type'        => 'text',
+				'description' => __( 'Place hook here for where to parse buttons.', 'wonkasoft-stripe' ),
+				'label'       => __( 'Show buttons hook', 'wonkasoft-stripe' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
+			'enabled_request_buttons' => array(
+				'title'       => __( 'Payment Request Buttons', 'wonkasoft-stripe' ),
+				'type'        => 'checkbox',
+				'description' => __( 'If enabled, users will be able to pay using Apple Pay or Chrome Payment Request if supported by the browser.', 'wonkasoft-stripe' ),
+				'label'       => __( "Enable Payment Request Buttons. (Apple Pay/Chrome Payment Request API) By using Apple Pay, you agree to <a href='https://stripe.com/apple-pay/legal' target='_blank'>Stripe</a> and <a href='https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/' target='_blank'>Apple's</a> terms of service", 'wonkasoft-stripe' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			),
 			'enabled_capture'         => array(
 				'title'       => __( 'Capture', 'wonkasoft-stripe' ),
 				'type'        => 'checkbox',
@@ -216,5 +222,37 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 			return;
 		}
 
+	}
+
+	/**
+	 * This will set where to parse the buttons.
+	 */
+	public function parse_buttons_on_hook() {
+		$hook_for_parse = $this->get_option( 'button_placement' );
+
+		add_action( $hook_for_parse, array( $this, 'wonkasoft_stripe_button_elements' ), 10 );
+	}
+
+	/**
+	 * This will echo elements for button parse.
+	 */
+	public function wonkasoft_stripe_button_elements() {
+
+		$output = $this->get_wonkasoft_stripe_button_elements();
+
+		echo $output;
+	}
+
+	/**
+	 * This will get elements for button parse.
+	 */
+	public function get_wonkasoft_stripe_button_elements() {
+
+		$output  = '';
+		$output .= '<script src="https://js.stripe.com/v3/"></script>';
+		$output .= '<div id="wonkasoft-payment-request-button">';
+		$output .= '</div>';
+
+		return $output;
 	}
 }

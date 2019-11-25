@@ -1,32 +1,32 @@
 (function( $ ) {
-	'use strict';
+	var wonkasoft_stripe_api_key,
+	wonkasoft_stripe_btns,
+	xhr = new XMLHttpRequest();
 
-	/**
-	 * All of the code for your public-facing JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
-	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
-	 */
+	window.onload = function( e ) 
+	{
+			console.log( 'working' );
+		if ( document.querySelector( '.express-btns-text-wrap' ) ) 
+		{
+			var data = {
+				'url': WS_AJAX.send,
+				'action': 'get_wonkasoft_stripe_api',
+				'security': WS_AJAX.security
+			};
+			var query_string = Object.keys( data ).map( function( key ) { return key + '=' + data[key]; } ).join('&');
+			xhr.onreadystatechange = function() {
+
+				if ( this.readyState == 4 && this.status == 200 ) 
+				{
+					var response = JSON.parse( this.responseText );
+					console.log(response);
+				}
+			};
+
+			xhr.open('GET', data.url + "?" + query_string );
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhr.send();
+		}
+	};
 
 })( jQuery );

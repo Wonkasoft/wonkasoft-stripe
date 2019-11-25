@@ -1,32 +1,64 @@
 (function( $ ) {
 	'use strict';
+	var select_mode;
 
-	/**
-	 * All of the code for your admin-facing JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
-	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
-	 */
+	window.onload = function() 
+	{
+		if ( document.querySelector( 'select[name=woocommerce_wonkasoft_stripe_select_mode]' ) ) 
+		{
+			select_mode = document.querySelector( 'select[name=woocommerce_wonkasoft_stripe_select_mode]' );
+			set_options();
+
+			select_mode.onchange = function() 
+			{
+				set_options();
+			};
+		}
+	};
+
+	function set_options() 
+	{
+		var table_rows = document.querySelectorAll( 'table.form-table tr');
+
+		if ( 'live_mode' === select_mode.value )
+		{
+			table_rows.forEach( function( row, i ) 
+				{
+					if ( row.getElementsByTagName( 'input' )[0] ) 
+					{
+						if ( '' !== row.style ) 
+						{
+							row.style = '';
+						}
+
+						if ( row.getElementsByTagName( 'input' )[0].name.includes( 'test' ) ) 
+						{
+							row.setAttribute( 'style', 'display: none;' );
+						}
+					}
+				});
+		}
+
+		if ( 'sandbox_mode' === select_mode.value ) 
+		{
+			table_rows.forEach( function( row, i ) 
+				{
+					if ( row.getElementsByTagName( 'input' )[0] ) 
+					{
+						if ( '' !== row.style ) 
+						{
+							row.style = '';
+						}
+						
+						if ( row.getElementsByTagName( 'input' )[0].name.includes( 'live' ) ) 
+						{
+							row.setAttribute( 'style', 'display: none;' );
+						}
+					}
+				});
+		}
+	}
 
 })( jQuery );
+
+

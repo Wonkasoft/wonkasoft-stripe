@@ -96,7 +96,16 @@ class Wonkasoft_Stripe_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name . 'admin-js', plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-admin.js', array( 'jquery' ), $this->version, true );
+
+		wp_localize_script(
+			$this->plugin_name . 'admin-js',
+			'WS_AJAX',
+			array(
+				'ws_send'  => admin_url( 'admin-ajax.php' ),
+				'security' => wp_create_nonce( 'ws-request-nonce' ),
+			)
+		);
 
 	}
 
@@ -127,6 +136,14 @@ class Wonkasoft_Stripe_Admin {
 		$methods[] = 'WC_Gateway_Wonkasoft_Stripe_Gateway';
 
 		return $methods;
+	}
+
+	/**
+	 * This will load the ajax request handler file.
+	 */
+	public function wonkasoft_stripe_ajax_requests() {
+
+		require_once WONKASOFT_STRIPE_PATH . 'admin/class-wonkasoft-stripe-admin-ajax-requests.php';
 	}
 
 }
