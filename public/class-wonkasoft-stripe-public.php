@@ -95,7 +95,16 @@ class Wonkasoft_Stripe_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-public.js', array( 'jquery' ), $this->version, true );
+		wp_enqueue_script( $this->plugin_name . 'public-js', plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-public.js', array( 'jquery' ), $this->version, true );
+
+		wp_localize_script(
+			$this->plugin_name . 'public-js',
+			'WS_AJAX',
+			array(
+				'ws_send'  => admin_url( 'admin-ajax.php' ),
+				'security' => wp_create_nonce( 'ws-request-nonce' ),
+			)
+		);
 
 	}
 
@@ -105,14 +114,16 @@ class Wonkasoft_Stripe_Public {
 	 * @since 1.0.0
 	 */
 	public function add_wonkasoft_stripe_buttons() {
-		$stripe         = new WC_Gateway_Wonkasoft_Stripe_Gateway();
-		$stripe_enabled = $stripe->get_option( 'enabled' );
+		$stripe                = new WC_Gateway_Wonkasoft_Stripe_Gateway();
+		$stripe_payment_method = $stripe->get_option( 'payment_method' );
+		$output                = array();
 
-		if ( 'yes' === $stripe_enabled || true === $stripe_enabled ) {
-			$output  = '<button type="button" id="apple-pay-btn" class="btn wonka-btn">';
-			$output .= '<span class="logo"><img src="' . WONKASOFT_STRIPE_IMG_PATH_PUBLIC . '/applepay.svg" width="50"></span>';
-			$output .= '</button>';
-			echo $output;
+		if ( 'express' === $stripe_payment_method || 'express_normal' === $stripe_payment_method ) {
+			$output['gpay']      = '<button type="button" id="g-pay-btn" class="wonka-btn">';
+			$output['gpay']     .= '</button>';
+			$output['applepay']  = '<button type="button" id="apple-pay-btn" class="wonka-btn">';
+			$output['applepay'] .= '</button>';
+			return $output;
 		}
 	}
 }

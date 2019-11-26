@@ -6,3 +6,22 @@
 /* Template for logo only button (height independent). */
 /* HTML */
 
+div#wonkasoft-payment-request-button button#g-pay-btn {
+	background-image: url('../img/gpay.svg');
+	background-position: center center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	width: 120px;
+	height: 32px;
+	color: #fff;
+}
+
+div#wonkasoft-payment-request-button button#apple-pay-btn {
+	background-image: url('../img/applepay.svg');
+	background-position: center center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	width: 120px;
+	height: 32px;
+	color: #fff;
+}

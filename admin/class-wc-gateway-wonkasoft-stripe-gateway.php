@@ -49,6 +49,13 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	 */
 	public $method_description = '';
 
+	/**
+	 * The gateway settings.
+	 *
+	 * @var array
+	 */
+	public $form_fields = array();
+
 	public function __construct() {
 
 		$this->id                 = 'wonkasoft_stripe';
@@ -59,7 +66,7 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 		$this->init_form_fields();
 		$this->init_settings();
 		$this->title = $this->get_option( 'title' );
-		$this->test  = get_option( $this->form_fields['select_mode']['options'] );
+		$this->form_fields;
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		$this->parse_buttons_on_hook();
@@ -70,122 +77,156 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	 */
 	public function init_form_fields() {
 
-		$this->form_fields = array(
-			'enabled'                 => array(
-				'title'   => __( 'Enable/Disable', 'wonkasoft-stripe' ),
-				'type'    => 'checkbox',
-				'label'   => __( 'Enable Stripe Express Payment', 'wonkasoft-stripe' ),
-				'default' => 'yes',
-			),
-			'title'                   => array(
-				'title'       => __( 'Title', 'wonkasoft-stripe' ),
-				'type'        => 'text',
-				'description' => __( 'This controls the title which the user sees during checkout.', 'wonkasoft-stripe' ),
-				'default'     => __( 'Stripe Payment', 'wonkasoft-stripe' ),
-				'placeholder' => __( 'Stripe Credit Cards' ),
-				'desc_tip'    => true,
-			),
-			'description'             => array(
-				'title'       => __( 'Description', 'wonkasoft-stripe' ),
-				'type'        => 'text',
-				'description' => __( 'This controls the title which the user sees during checkout.', 'wonkasoft-stripe' ),
-				'default'     => 'Pay with your credit card via Stripe.',
-				'placeholder' => __( 'Pay with your credit card via Stripe.', 'wonkasoft-stripe' ),
-				'desc_tip'    => true,
-			),
-			'select_mode'             => array(
-				'title'       => __( 'Select Mode', 'wonkasoft-stripe' ),
-				'type'        => 'select',
-				'label'       => __( 'Select Live or Sandbox Modes', 'wonkasoft-stripe' ),
-				'description' => __( 'Place the payment gateway in test mode using test API keys.', 'wonkasoft-stripe' ),
-				'options'     => array(
-					'sandbox_mode' => __( 'Sandbox', 'wonkasoft-stripe' ),
-					'live_mode'    => __( 'Live', 'wonkasoft-stripe' ),
+		$this->form_fields = apply_filters(
+			'wonkasoft_stripe_settings',
+			array(
+				'enabled'                 => array(
+					'title'       => __( 'Enable/Disable', 'wonkasoft-stripe' ),
+					'type'        => 'checkbox',
+					'label'       => __( 'Enable Stripe Express Payment', 'wonkasoft-stripe' ),
+					'description' => __( 'This controls the title which the user sees during checkout.', 'wonkasoft-stripe' ),
+					'default'     => 'no',
+					'desc_tip'    => true,
 				),
-				'default'     => array(),
-				'desc_tip'    => true,
-			),
-			'test_publishable_key'    => array(
-				'title'       => __( 'Test Publishable Key', 'wonkasoft-stripe' ),
-				'type'        => 'text',
-				'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'default'     => '',
-				'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'desc_tip'    => true,
-			),
-			'test_secret_key'         => array(
-				'title'       => __( 'Test Secret Key', 'wonkasoft-stripe' ),
-				'type'        => 'password',
-				'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'default'     => '',
-				'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'desc_tip'    => true,
-			),
-			'test_webhook_secret'     => array(
-				'title'       => __( 'Test Webhook Secret', 'wonkasoft-stripe' ),
-				'type'        => 'password',
-				'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'default'     => '',
-				'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'desc_tip'    => true,
-			),
-			'live_publishable_key'    => array(
-				'title'       => __( 'Live Publishable Key', 'wonkasoft-stripe' ),
-				'type'        => 'text',
-				'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'default'     => '',
-				'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'desc_tip'    => true,
-			),
-			'live_secret_key'         => array(
-				'title'       => __( 'Live Secret Key', 'wonkasoft-stripe' ),
-				'type'        => 'password',
-				'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'default'     => '',
-				'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'desc_tip'    => true,
-			),
-			'live_webhook_secret'     => array(
-				'title'       => __( 'Live Webhook Secret', 'wonkasoft-stripe' ),
-				'type'        => 'password',
-				'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'default'     => '',
-				'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
-				'desc_tip'    => true,
-			),
-			'button_placement'        => array(
-				'title'       => __( 'Hook for button placement', 'wonkasoft-stripe' ),
-				'type'        => 'text',
-				'description' => __( 'Place hook here for where to parse buttons.', 'wonkasoft-stripe' ),
-				'label'       => __( 'Show buttons hook', 'wonkasoft-stripe' ),
-				'default'     => '',
-				'desc_tip'    => true,
-			),
-			'enabled_request_buttons' => array(
-				'title'       => __( 'Payment Request Buttons', 'wonkasoft-stripe' ),
-				'type'        => 'checkbox',
-				'description' => __( 'If enabled, users will be able to pay using Apple Pay or Chrome Payment Request if supported by the browser.', 'wonkasoft-stripe' ),
-				'label'       => __( "Enable Payment Request Buttons. (Apple Pay/Chrome Payment Request API) By using Apple Pay, you agree to <a href='https://stripe.com/apple-pay/legal' target='_blank'>Stripe</a> and <a href='https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/' target='_blank'>Apple's</a> terms of service", 'wonkasoft-stripe' ),
-				'default'     => '',
-				'desc_tip'    => true,
-			),
-			'enabled_capture'         => array(
-				'title'       => __( 'Capture', 'wonkasoft-stripe' ),
-				'type'        => 'checkbox',
-				'description' => __( 'Whether or not to immediately capture the charge. When uncheck, the charge issues an authorization and will need to be captured later. Uncaptured charges expire in 7 days.', 'wonkasoft-stripe' ),
-				'label'       => __( 'Capture charge immediately.', 'wonkasoft-stripe' ),
-				'default'     => '',
-				'desc_tip'    => true,
-			),
-			'enabled_logging'         => array(
-				'title'       => __( 'Loggin', 'wonkasoft-stripe' ),
-				'type'        => 'checkbox',
-				'description' => __( 'Save debug messages to the WooCommerce System Status log.', 'wonkasoft-stripe' ),
-				'label'       => __( 'Log debug messages', 'wonkasoft-stripe' ),
-				'default'     => '',
-				'desc_tip'    => true,
-			),
+				'title'                   => array(
+					'title'       => __( 'Title', 'wonkasoft-stripe' ),
+					'type'        => 'text',
+					'description' => __( 'This controls the title which the user sees during checkout.', 'wonkasoft-stripe' ),
+					'default'     => __( 'Stripe Payment', 'wonkasoft-stripe' ),
+					'placeholder' => __( 'Stripe Credit Cards' ),
+					'desc_tip'    => true,
+				),
+				'description'             => array(
+					'title'       => __( 'Description', 'wonkasoft-stripe' ),
+					'type'        => 'text',
+					'description' => __( 'This controls the title which the user sees during checkout.', 'wonkasoft-stripe' ),
+					'default'     => 'Pay with your credit card via Stripe.',
+					'placeholder' => __( 'Pay with your credit card via Stripe.', 'wonkasoft-stripe' ),
+					'desc_tip'    => true,
+				),
+				'webhook'                 => array(
+					'title'       => __( 'Webhook Endpoints', 'wonkasoft-stripe' ),
+					'type'        => 'title',
+					/* translators: webhook URL */
+					'description' => $this->display_admin_settings_webhook_description(),
+				),
+				'select_mode'             => array(
+					'title'       => __( 'Select Mode', 'wonkasoft-stripe' ),
+					'type'        => 'select',
+					'label'       => __( 'Select Live or Sandbox Modes', 'wonkasoft-stripe' ),
+					'description' => __( 'Place the payment gateway in test mode using test API keys.', 'wonkasoft-stripe' ),
+					'options'     => array(
+						'sandbox_mode' => __( 'Sandbox', 'wonkasoft-stripe' ),
+						'live_mode'    => __( 'Live', 'wonkasoft-stripe' ),
+					),
+					'default'     => array(),
+					'desc_tip'    => true,
+				),
+				'test_publishable_key'    => array(
+					'title'       => __( 'Test Publishable Key', 'wonkasoft-stripe' ),
+					'type'        => 'text',
+					'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'desc_tip'    => true,
+				),
+				'test_secret_key'         => array(
+					'title'       => __( 'Test Secret Key', 'wonkasoft-stripe' ),
+					'type'        => 'password',
+					'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'desc_tip'    => true,
+				),
+				'test_webhook_secret'     => array(
+					'title'       => __( 'Test Webhook Secret', 'wonkasoft-stripe' ),
+					'type'        => 'password',
+					'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'desc_tip'    => true,
+				),
+				'live_publishable_key'    => array(
+					'title'       => __( 'Live Publishable Key', 'wonkasoft-stripe' ),
+					'type'        => 'text',
+					'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'desc_tip'    => true,
+				),
+				'live_secret_key'         => array(
+					'title'       => __( 'Live Secret Key', 'wonkasoft-stripe' ),
+					'type'        => 'password',
+					'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'desc_tip'    => true,
+				),
+				'live_webhook_secret'     => array(
+					'title'       => __( 'Live Webhook Secret', 'wonkasoft-stripe' ),
+					'type'        => 'password',
+					'description' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
+					'desc_tip'    => true,
+				),
+				'button_placement'        => array(
+					'title'       => __( 'Hook for button placement', 'wonkasoft-stripe' ),
+					'type'        => 'text',
+					'description' => __( 'Place hook here for where to parse buttons.', 'wonkasoft-stripe' ),
+					'label'       => __( 'Show buttons hook', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'desc_tip'    => true,
+				),
+				'payment_method'          => array(
+					'title'       => __( 'Payment Method', 'wonkasoft-stripe' ),
+					'type'        => 'select',
+					'description' => __( 'Please choose payment method between express, normal, or both.', 'wonkasoft-stripe' ),
+					'label'       => __( 'Payment Method Choices.', 'wonkasoft-stripe' ),
+					'options'     => array(
+						'express'        => __( 'Express', 'wonkasoft-stripe' ),
+						'normal'         => __( 'Normal', 'wonkasoft-stripe' ),
+						'express_normal' => __( 'Express & Normal', 'wonkasoft-stripe' ),
+					),
+					'default'     => 'express',
+					'desc_tip'    => true,
+				),
+				'enabled_request_buttons' => array(
+					'title'       => __( 'Payment Request Buttons', 'wonkasoft-stripe' ),
+					'type'        => 'checkbox',
+					'description' => __( 'If enabled, users will be able to pay using Apple Pay or Chrome Payment Request if supported by the browser.', 'wonkasoft-stripe' ),
+					'label'       => __( "Enable Payment Request Buttons. (Apple Pay/Chrome Payment Request API) By using Apple Pay, you agree to <a href='https://stripe.com/apple-pay/legal' target='_blank'>Stripe</a> and <a href='https://developer.apple.com/apple-pay/acceptable-use-guidelines-for-websites/' target='_blank'>Apple's</a> terms of service", 'wonkasoft-stripe' ),
+					'default'     => '',
+					'desc_tip'    => true,
+				),
+				'enabled_capture'         => array(
+					'title'       => __( 'Capture', 'wonkasoft-stripe' ),
+					'type'        => 'checkbox',
+					'description' => __( 'Whether or not to immediately capture the charge. When uncheck, the charge issues an authorization and will need to be captured later. Uncaptured charges expire in 7 days.', 'wonkasoft-stripe' ),
+					'label'       => __( 'Capture charge immediately.', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'desc_tip'    => true,
+				),
+				'enabled_logging'         => array(
+					'title'       => __( 'Loggin', 'wonkasoft-stripe' ),
+					'type'        => 'checkbox',
+					'description' => __( 'Save debug messages to the WooCommerce System Status log.', 'wonkasoft-stripe' ),
+					'label'       => __( 'Log debug messages', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'desc_tip'    => true,
+				),
+			)
 		);
+	}
+
+	/**
+	 * [display_admin_settings_webhook_description description]
+	 *
+	 * @return [type] [description]
+	 */
+	public function display_admin_settings_webhook_description() {
+		/* translators: 1) webhook url */
+		return sprintf( __( 'You must add the following webhook endpoint <strong style="background-color:#ddd;">&nbsp;%s&nbsp;</strong> to your <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">Stripe account settings</a>. This will enable you to receive notifications on the charge statuses.', 'woocommerce-gateway-stripe' ), WC_Stripe_Helper::get_webhook_url() );
 	}
 
 	/**

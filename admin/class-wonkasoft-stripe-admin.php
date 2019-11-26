@@ -98,15 +98,6 @@ class Wonkasoft_Stripe_Admin {
 
 		wp_enqueue_script( $this->plugin_name . 'admin-js', plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-admin.js', array( 'jquery' ), $this->version, true );
 
-		wp_localize_script(
-			$this->plugin_name . 'admin-js',
-			'WS_AJAX',
-			array(
-				'ws_send'  => admin_url( 'admin-ajax.php' ),
-				'security' => wp_create_nonce( 'ws-request-nonce' ),
-			)
-		);
-
 	}
 
 

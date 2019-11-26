@@ -2,9 +2,9 @@
 	'use strict';
 	var select_mode;
 
-	window.onload = function() 
+	if ( document.querySelector( 'select[name=woocommerce_wonkasoft_stripe_select_mode]' ) ) 
 	{
-		if ( document.querySelector( 'select[name=woocommerce_wonkasoft_stripe_select_mode]' ) ) 
+		window.addEventListener( 'load', function( e ) 
 		{
 			select_mode = document.querySelector( 'select[name=woocommerce_wonkasoft_stripe_select_mode]' );
 			set_options();
@@ -13,8 +13,8 @@
 			{
 				set_options();
 			};
-		}
-	};
+		} );
+	}
 
 	function set_options() 
 	{
