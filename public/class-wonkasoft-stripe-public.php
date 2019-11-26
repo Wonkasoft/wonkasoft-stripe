@@ -126,4 +126,43 @@ class Wonkasoft_Stripe_Public {
 			return $output;
 		}
 	}
+
+	/**
+	 * This function registers a rest end point.
+	 */
+	public function wc_rest_payment_endpoints( $server ) {
+		/**
+		 * Handle Payment Method request.
+		 */
+		register_rest_route(
+			'wc/v2',
+			'/wonkasoft-stripe-payment/',
+			array(
+				'methods'  => array( WP_REST_Server::READABLE, WP_REST_Server::EDITABLE ),
+				'callback' => array( $this, 'wc_rest_payment_endpoint_handler' ),
+			),
+			false
+		);
+	}
+
+	/**
+	 * Handler for the payment endpoint.
+	 *
+	 * @param  array $request contains the request sent to the end point.
+	 * @return [type]          [description]
+	 */
+	public function wc_rest_payment_endpoint_handler( $request = null ) {
+		$response       = array();
+		$parameters     = $request->get_params();
+		$payment_method = sanitize_text_field( $parameters['payment_method'] );
+		$order_id       = sanitize_text_field( $parameters['order_id'] );
+		$payment_token  = sanitize_text_field( $parameters['payment_token'] );
+		$error          = new WP_Error();
+		echo "<pre>\n";
+		print_r( $parameters );
+		echo "</pre>\n";
+
+		return new WP_REST_Response( $response );
+
+	}
 }

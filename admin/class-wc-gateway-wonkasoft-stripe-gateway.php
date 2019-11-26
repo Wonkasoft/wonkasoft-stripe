@@ -67,9 +67,10 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 		$this->init_settings();
 		$this->title = $this->get_option( 'title' );
 		$this->form_fields;
+		$this->parse_buttons_on_hook();
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-		$this->parse_buttons_on_hook();
+
 	}
 
 	/**
@@ -249,6 +250,7 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 			// Remove cart.
 			$woocommerce->cart->empty_cart();
 
+			$order->update_status( 'processing', __( 'Stripe payment completed', 'wonkasoft-stripe' ) );
 			// Return thank you redirect.
 			return array(
 				'result'   => 'success',

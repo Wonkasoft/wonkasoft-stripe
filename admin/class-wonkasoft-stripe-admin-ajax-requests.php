@@ -33,6 +33,14 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Admin_Ajax_Requests' ) ) {
 			}
 
 			global $woocommerce;
+
+			if ( isset( $_POST['token'] ) ) {
+				$payment_token            = ( isset( $_POST['token'] ) ) ? wp_kses_post( wp_unslash( $_POST['token'] ) ) : 'failed';
+				$wonkasoft_stripe_gateway = new WC_Gateway_Wonkasoft_Stripe_Gateway();
+				$_POST['stripe_token']    = $payment_token;
+				wp_send_json_success( $woocommerce );
+			}
+
 			$cart  = array();
 			$items = WC()->cart->get_cart();
 			foreach ( $items as $item => $values ) {
@@ -54,7 +62,8 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Admin_Ajax_Requests' ) ) {
 				if ( 'live_mode' === $wonka_stripe_mode ) {
 					$output['api_key']      = $wonka_stripe->get_option( 'live_publishable_key' );
 					$output['account_id']   = 'acct_1EGeL2GUa6yKV42u';
-					$output['woocommerce']  = $cart;
+					$output['woocommerce']  = $woocommerce;
+					$output['cart']         = $cart;
 					$output['gpay_btn']     = $get_buttons['gpay'];
 					$output['applepay_btn'] = $get_buttons['applepay'];
 				}
@@ -62,7 +71,8 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Admin_Ajax_Requests' ) ) {
 				if ( 'sandbox_mode' === $wonka_stripe_mode ) {
 					$output['api_key']      = $wonka_stripe->get_option( 'test_publishable_key' );
 					$output['account_id']   = 'acct_1EGeL2GUa6yKV42u';
-					$output['woocommerce']  = $cart;
+					$output['woocommerce']  = $woocommerce;
+					$output['cart']         = $cart;
 					$output['gpay_btn']     = $get_buttons['gpay'];
 					$output['applepay_btn'] = $get_buttons['applepay'];
 				}

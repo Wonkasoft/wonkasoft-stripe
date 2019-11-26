@@ -20,9 +20,10 @@
 				if ( this.readyState == 4 && this.status == 200 ) 
 				{
 					var response = JSON.parse( this.responseText );
-					var cart = response.data.woocommerce;
+					var cart = response.data.cart;
 					console.log(response);
 					console.log(cart);
+					console.log(response.data.woocommerce);
 
 					var cart_total = 0;
 					cart.forEach( function( item, i ) 
@@ -32,7 +33,7 @@
 					cart_total = Number( cart_total );
 
 					var stripe = Stripe( response.data.api_key, {
-						_stripeAccount: response.data.account_id,
+						stripeAccount: response.data.account_id,
 					} );
 					var elements = stripe.elements();
 					var paymentRequest = stripe.paymentRequest({
@@ -70,28 +71,31 @@
 					  }
 					});
 
-					paymentRequest.on('token', function(ev) {
-					  // Send the token to your server to charge it!
-					  fetch('/charges', {
-					    method: 'POST',
-					    body: JSON.stringify({token: ev.token.id}),
-					    headers: {'content-type': 'application/json'},
-					  })
-					  .then( function( response ) {
-					    if ( response.ok ) {
-					    	console.log(response);
-					      // Report to the browser that the payment was successful, prompting
-					      // it to close the browser payment interface.
-					      ev.complete('success');
-					    } else {
-					      // Report to the browser that the payment failed, prompting it to
-					      // re-show the payment interface, or show an error message and close
-					      // the payment interface.
-					      ev.complete('fail');
-					    }
-					  });
-					});
+					paymentRequest.on( 'token', function(ev) {
 
+					  // Send the token to your server to charge it!
+					    fetch('../api/wc/v2/wonkasoft-stripe-payment/', {
+					      method: 'POST',
+					      body: JSON.stringify({token: ev.token.id}),
+					      headers: {'content-type': 'application/json'},
+					    })
+					    .then(function(response) {
+					      	console.log( response );
+					      if (response.ok) {
+					      	console.log( response );
+					        // Report to the browser that the payment was successful, prompting
+					        // it to close the browser payment interface.
+					        ev.complete('success');
+					      } else {
+					      	console.log( response );
+					        // Report to the browser that the payment failed, prompting it to
+					        // re-show the payment interface, or show an error message and close
+					        // the payment interface.
+					        ev.complete('fail');
+					      }
+					    });
+					});
+					
 					paymentRequest.on('shippingaddresschange', function(ev) {
 					  if (ev.shippingAddress.country !== 'US') {
 					    ev.updateWith({status: 'invalid_shipping_address'});
