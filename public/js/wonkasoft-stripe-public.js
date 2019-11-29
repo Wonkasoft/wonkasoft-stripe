@@ -10,6 +10,7 @@
 		wonkasoft_stripe_btns_container = document.querySelector( '#wonkasoft-payment-request-button' );
 		window.addEventListener( 'load',function( e ) 
 		{
+			console.log( $('form[name=checkout]').serialize() );
 			var data = {
 				'url': WS_AJAX.ws_send,
 				'action': 'get_wonkasoft_stripe_api',
@@ -83,14 +84,6 @@
 
 					console.log( card );
 
-					document.querySelector( '#wonkasoft-payment-request-button' ).innerHTML += gpay_btn;
-					var payment_box = document.querySelector('#payment' );
-					card.mount( '#wonkasoft-stripe-payment-field' );
-					payment_box.addEventListener( 'wc_fragments_loaded', function( e ) 
-					{
-						card.mount( '#wonkasoft-stripe-payment-field' );
-
-					});
 					// console.log( paymentRequest );
 					// paymentRequest.on('shippingoptionchange', function(ev) {
 					//   if ( null !== ev.shippingOption ) {

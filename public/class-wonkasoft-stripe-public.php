@@ -9,6 +9,8 @@
  * @subpackage Wonkasoft_Stripe/public
  */
 
+use includes\stripe\Stripe\Stripe;
+
 /**
  * The public-facing functionality of the plugin.
  *
@@ -19,9 +21,6 @@
  * @subpackage Wonkasoft_Stripe/public
  * @author     Wonkasoft <support@wonkasoft.com>
  */
-
-use includes\stripe\Stripe;
-
 class Wonkasoft_Stripe_Public {
 
 	/**
@@ -190,6 +189,8 @@ class Wonkasoft_Stripe_Public {
 	}
 
 	public function wonkasoft_stripe_checkout_init( $checkout ) {
+
+		$stripe = new \Stripe\Stripe();
 		\Stripe\Stripe::setAppInfo(
 			'WooCommerce Wonkasoft Stripe',
 			$this->version,
@@ -203,15 +204,16 @@ class Wonkasoft_Stripe_Public {
 		} else {
 			$wonkasoft_stripe_key = $wonkasoft_stripe_gw->get_option( 'live_publishable_key' );
 		}
-		$ApiKey     = \Stripe\Stripe::setApiKey( $wonkasoft_stripe_key );
-		$ApiVersion = \Stripe\Stripe::setApiVersion( '2019-11-05' );
+		\Stripe\Stripe::setApiKey( $wonkasoft_stripe_key );
+		\Stripe\Stripe::setApiVersion( '2019-11-05' );
 
+		global $woocommerce;
 		if ( ! isset( $_SERVER['HTTPS'] ) ) {
 			echo 'Present an error to the user';
 		} else {
-			$test = \Stripe\Stripe::getApiKey();
-			echo $ApiKey;
-
+			// echo "<pre>\n";
+			// print_r( $woocommerce );
+			// echo "</pre>\n";
 		}
 	}
 
