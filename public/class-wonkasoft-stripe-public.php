@@ -19,6 +19,9 @@
  * @subpackage Wonkasoft_Stripe/public
  * @author     Wonkasoft <support@wonkasoft.com>
  */
+
+use includes\stripe\Stripe;
+
 class Wonkasoft_Stripe_Public {
 
 	/**
@@ -184,81 +187,32 @@ class Wonkasoft_Stripe_Public {
 
 		return new WP_REST_Response( $response );
 
-		// <pre>
-		// Array
-		// (
-		// [shippingOption] => Array
-		// (
-		// [amount] => 0
-		// [label] => FedEx SmartPost Ground: FREE
-		// [id] => free_shipping:14
-		// [detail] =>
-		// )
+	}
 
-		// [shippingAddress] => Array
-		// (
-		// [addressLine] => Array
-		// (
-		// [0] => 25937 MARGARET AVE
-		// )
+	public function wonkasoft_stripe_checkout_init( $checkout ) {
+		\Stripe\Stripe::setAppInfo(
+			'WooCommerce Wonkasoft Stripe',
+			$this->version,
+			'https://wonkasoft.com/wonkasoft-stripe',
+			''
+		);
+		$wonkasoft_stripe_gw          = new WC_Gateway_Wonkasoft_Stripe_Gateway();
+		$wonkasoft_stripe_select_mode = $wonkasoft_stripe_gw->get_option( 'select_mode' );
+		if ( 'sandbox_mode' === $wonkasoft_stripe_select_mode ) {
+			$wonkasoft_stripe_key = $wonkasoft_stripe_gw->get_option( 'test_publishable_key' );
+		} else {
+			$wonkasoft_stripe_key = $wonkasoft_stripe_gw->get_option( 'live_publishable_key' );
+		}
+		$ApiKey     = \Stripe\Stripe::setApiKey( $wonkasoft_stripe_key );
+		$ApiVersion = \Stripe\Stripe::setApiVersion( '2019-11-05' );
 
-		// [city] => MORENO VALLEY
-		// [country] => US
-		// [dependentLocality] =>
-		// [organization] => Wonkasoft
-		// [phone] => +19517436250
-		// [postalCode] => 92551-7026
-		// [recipient] => Rudy Lister
-		// [region] => CA
-		// [sortingCode] =>
-		// )
+		if ( ! isset( $_SERVER['HTTPS'] ) ) {
+			echo 'Present an error to the user';
+		} else {
+			$test = \Stripe\Stripe::getApiKey();
+			echo $ApiKey;
 
-		// [payerEmail] => rlister@wonkasoft.com
-		// [payerPhone] => +19517436250
-		// [payerName] => Rudy Lister
-		// [methodName] => basic-card
-		// [token] => Array
-		// (
-		// [id] => tok_1FjIISGUa6yKV42ulbNTKlq1
-		// [object] => token
-		// [card] => Array
-		// (
-		// [id] => card_1FjIISGUa6yKV42uaBpXdKQP
-		// [object] => card
-		// [address_city] => MORENO VALLEY
-		// [address_country] => US
-		// [address_line1] => 25937 MARGARET AVE
-		// [address_line1_check] => unchecked
-		// [address_line2] =>
-		// [address_state] => CA
-		// [address_zip] => 92551-7026
-		// [address_zip_check] => unchecked
-		// [brand] => Visa
-		// [country] => US
-		// [cvc_check] => unchecked
-		// [dynamic_last4] =>
-		// [exp_month] => 2
-		// [exp_year] => 2022
-		// [funding] => credit
-		// [last4] => 4242
-		// [metadata] => Array
-		// (
-		// )
-
-		// [name] => Rudy TesterExpress
-		// [tokenization_method] =>
-		// )
-
-		// [client_ip] => 76.168.236.90
-		// [created] => 1574829516
-		// [email] => rlister@wonkasoft.com
-		// [livemode] =>
-		// [type] => card
-		// [used] =>
-		// )
-
-		// )
-		// </pre>
+		}
 	}
 
 	/**
