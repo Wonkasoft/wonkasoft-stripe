@@ -40,6 +40,15 @@ class Wonkasoft_Stripe_Public {
 	private $version;
 
 	/**
+	 * The woocommerce available gateways.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      array    $current_available_gateways    The current available gateways.
+	 */
+	private $current_available_gateways;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -250,5 +259,22 @@ class Wonkasoft_Stripe_Public {
 
 		// )
 		// </pre>
+	}
+
+	/**
+	 * This checks to see if Wonkasoft Stripe is set to only express payments.
+	 *
+	 * @param  array $available_gateways contains the available gateways.
+	 * @return array returns available gateways.
+	 */
+	public function wonkasoft_stripe_check_for_express_only( $available_gateways ) {
+		$wonkasoft_stripe_gw             = new WC_Gateway_Wonkasoft_Stripe_Gateway();
+		$wonkasoft_stripe_payment_method = $wonkasoft_stripe_gw->get_option( 'payment_method' );
+
+		if ( 'express' === $wonkasoft_stripe_payment_method && array_key_exists( 'wonkasoft_stripe', $available_gateways ) ) {
+			unset( $available_gateways['wonkasoft_stripe'] );
+		}
+
+		return $available_gateways;
 	}
 }
