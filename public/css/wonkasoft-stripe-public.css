@@ -6,6 +6,15 @@
 /* Template for logo only button (height independent). */
 /* HTML */
 
+div#wonkasoft-payment-request-button {
+	display: grid;
+	grid-gap: 8px;
+	align-items: center;
+	justify-content: center;
+	grid-auto-flow: column;
+	padding: 8px;
+}
+
 div#wonkasoft-payment-request-button button#g-pay-btn {
 	background-image: url('../img/gpay.svg');
 	background-position: center center;

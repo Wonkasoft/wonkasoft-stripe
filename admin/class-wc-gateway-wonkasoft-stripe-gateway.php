@@ -231,6 +231,19 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * Payment fields for Wonkasoft Stripe.
+	 *
+	 * @see WC_Payment_Gateway::payment_fields()
+	 */
+	public function payment_fields() {
+		?>
+		<fieldset>
+			<div id="wonkasoft-stripe-payment-field"></div>
+		</fieldset>
+		<?php
+	}
+
+	/**
 	 * This processes payment.
 	 *
 	 * @param  number $order_id contains the order number to process.
@@ -244,11 +257,10 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 		$order->update_status( 'on-hold', __( 'Awaiting Stripe payment', 'wonkasoft-stripe' ) );
 
 		try {
-
-			$order->payment_complete();
+			// $order->payment_complete();
 
 			// Remove cart.
-			$woocommerce->cart->empty_cart();
+			// $woocommerce->cart->empty_cart();
 
 			$order->update_status( 'processing', __( 'Stripe payment completed', 'wonkasoft-stripe' ) );
 			// Return thank you redirect.
@@ -297,5 +309,13 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 		$output .= '</div>';
 
 		return $output;
+	}
+
+	/**
+	 * This will make gateway available.
+	 */
+	public function is_available() {
+
+		return parent::is_available();
 	}
 }
