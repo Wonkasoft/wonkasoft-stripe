@@ -56,6 +56,13 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	 */
 	public $form_fields = array();
 
+	/**
+	 * types of gateway supports.
+	 *
+	 * @var array
+	 */
+	public $supports = array();
+
 	public function __construct() {
 
 		$this->id                 = 'wonkasoft_stripe';
@@ -67,7 +74,13 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 		$this->init_settings();
 		$this->title = $this->get_option( 'title' );
 		$this->form_fields;
-		$this->parse_buttons_on_hook();
+		$this->supports = array(
+			'subscriptions',
+			'products',
+			'tokenization',
+			'refunds',
+			'pre-orders',
+		);
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
@@ -108,7 +121,8 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 				'webhook'                 => array(
 					'title'       => __( 'Webhook Endpoints', 'wonkasoft-stripe' ),
 					'type'        => 'title',
-					/* translators: webhook URL */
+					/*
+					 translators: webhook URL */
 					'description' => $this->display_admin_settings_webhook_description(),
 				),
 				'select_mode'             => array(
@@ -171,6 +185,14 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 					'placeholder' => __( 'Get your API keys from your Stripe Account', 'wonkasoft-stripe' ),
 					'desc_tip'    => true,
 				),
+				'stripe_account_id'       => array(
+					'title'       => __( 'Stripe Account Id', 'wonkasoft-stripe' ),
+					'type'        => 'password',
+					'description' => __( 'Get your Stripe Account Id', 'wonkasoft-stripe' ),
+					'default'     => '',
+					'placeholder' => __( 'Get your Stripe Account Id', 'wonkasoft-stripe' ),
+					'desc_tip'    => true,
+				),
 				'button_placement'        => array(
 					'title'       => __( 'Hook for button placement', 'wonkasoft-stripe' ),
 					'type'        => 'text',
@@ -227,7 +249,20 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	 */
 	public function display_admin_settings_webhook_description() {
 		/* translators: 1) webhook url */
-		return sprintf( __( 'You must add the following webhook endpoint <strong style="background-color:#ddd;">&nbsp;%s&nbsp;</strong> to your <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">Stripe account settings</a>. This will enable you to receive notifications on the charge statuses.', 'woocommerce-gateway-stripe' ), WC_Stripe_Helper::get_webhook_url() );
+		return sprintf( __( 'You must add the following webhook endpoint <strong style="background-color:#ddd;">&nbsp;%s&nbsp;</strong> to your <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">Stripe account settings</a>. This will enable you to receive notifications on the charge statuses.', 'woocommerce-gateway-stripe' ), $this->get_webhook_url() );
+	}
+
+	/**
+	 * Gets the webhook URL for Stripe triggers. Used mainly for
+	 * asyncronous redirect payment methods in which statuses are
+	 * not immediately chargeable.
+	 *
+	 * @since 1.0.0
+	 * @version 1.0.0
+	 * @return string
+	 */
+	public static function get_webhook_url() {
+		return add_query_arg( 'wc-api', 'wc_stripe', trailingslashit( get_home_url() ) );
 	}
 
 	/**
@@ -280,6 +315,35 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * This will echo notices to parse in the woocommerce notices div.
+	 */
+	public function parse_woocommerce_notices( $msg ) {
+
+		echo $this->get_parse_woocommerce_notices( $msg );
+	}
+
+	/**
+	 * This will get notices to parse in the woocommerce notices div.
+	 */
+	public function get_parse_woocommerce_notices( $msg ) {
+
+		$output  = '';
+		$output .= '<script>';
+		$output .= '( function( $ ) {';
+		$output .= 'window.addEventListener( "load", function() {';
+		$output .= 'if ( document.querySelector( ".woocommerce-notices-wrapper" ) ) {';
+		$output .= 'var notices_wrapper = document.querySelector( ".woocommerce-notices-wrapper" );';
+		$output .= "var notice_msg = '<span>$msg</span>';";
+		$output .= 'notices_wrapper.innerHTML += notice_msg;';
+		$output .= '}';
+		$output .= '});';
+		$output .= '})( jQuery );';
+		$output .= '</script>';
+
+		return $output;
+	}
+
+	/**
 	 * This will set where to parse the buttons.
 	 */
 	public function parse_buttons_on_hook() {
@@ -292,10 +356,7 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	 * This will echo elements for button parse.
 	 */
 	public function wonkasoft_stripe_button_elements() {
-
-		$output = $this->get_wonkasoft_stripe_button_elements();
-
-		echo $output;
+		echo $this->get_wonkasoft_stripe_button_elements();
 	}
 
 	/**
@@ -304,7 +365,6 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	public function get_wonkasoft_stripe_button_elements() {
 
 		$output  = '';
-		$output .= '<script src="https://js.stripe.com/v3/"></script>';
 		$output .= '<div id="wonkasoft-payment-request-button">';
 		$output .= '</div>';
 

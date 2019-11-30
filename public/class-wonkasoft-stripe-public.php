@@ -51,6 +51,27 @@ class Wonkasoft_Stripe_Public {
 	private $current_available_gateways;
 
 	/**
+	 * The public instance of the wonkasoft stripe gateway.
+	 *
+	 * @var object
+	 */
+	public $ws_gateway;
+
+	/**
+	 * The Wonkasoft Stripe published api key.
+	 *
+	 * @var string
+	 */
+	public $ws_pk;
+
+	/**
+	 * Gets loaded with stripe account id.
+	 *
+	 * @var string
+	 */
+	public $ws_stripe_account_id;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -61,7 +82,9 @@ class Wonkasoft_Stripe_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
-
+		if ( class_exists( 'WC_Gateway_Wonkasoft_Stripe_Gateway' ) && empty( $this->ws_gateway ) ) {
+			$this->init_public_wonkasoft_stripe_gateway();
+		}
 	}
 
 	/**
@@ -106,22 +129,52 @@ class Wonkasoft_Stripe_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name . 'public-js', plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-public.js', array( 'jquery' ), $this->version, true );
-
 		if ( is_checkout() ) {
+			wp_enqueue_script( 'stripe', 'https://js.stripe.com/v3/', '', '3.0', true );
+			wp_enqueue_script( $this->plugin_name . 'public-js', plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-public.js', array( 'jquery' ), $this->version, true );
+			$wonkasoft_stripe_params = array(
+				'ws_ajax'            => WC_AJAX::get_endpoint( '%%endpoint%%' ),
+				'ws_charge_endpoint' => esc_url( rest_url( '/wonkasoft/v2' ) . '/wonkasoft-stripe-payment/' ),
+				'stripe'             => array(
+					'key'        => $this->ws_pk,
+					'account_id' => $this->ws_stripe_account_id,
+					'btns'       => $this->add_wonkasoft_stripe_buttons(),
+				),
+				'nonces'             => array(
+					'ws_payment'         => wp_create_nonce( 'ws_payment' ),
+					'ws_checkout'        => wp_create_nonce( 'woocommerce-process_checkout' ),
+					'ws_shipping'        => wp_create_nonce( 'ws_shipping' ),
+					'ws_update_shipping' => wp_create_nonce( 'ws_update_shipping' ),
+					'ws_request'         => wp_create_nonce( 'ws_request' ),
+					'wp_rest'            => wp_create_nonce( 'wp_rest' ),
+				),
+				'checkout'           => array(
+					'url' => wc_get_checkout_url(),
+				),
+			);
 			wp_localize_script(
 				$this->plugin_name . 'public-js',
-				'WS_AJAX',
-				array(
-					'ws_send'     => esc_url( admin_url( 'admin-ajax.php' ) ),
-					'ws_endpoint' => esc_url( rest_url( '/wonkasoft/v2' ) . '/wonkasoft-stripe-payment/' ),
-					'nonces'      => array(
-						'ws_request' => wp_create_nonce( 'ws_request' ),
-						'wp_rest'    => wp_create_nonce( 'wp_rest' ),
-					),
-				)
+				'WS_STRIPE',
+				apply_filters( 'wonkasoft_stripe_params', $wonkasoft_stripe_params )
 			);
+		} else {
+			wp_enqueue_script( $this->plugin_name . 'public-js', plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-public.js', array( 'jquery' ), $this->version, true );
 		}
+
+	}
+
+	/**
+	 * This sets the Wonkasoft Stripe Gateway public instance.
+	 */
+	public function init_public_wonkasoft_stripe_gateway() {
+		$this->ws_gateway = new WC_Gateway_Wonkasoft_Stripe_Gateway();
+		$select_mode      = $this->ws_gateway->get_option( 'select_mode' );
+		if ( 'sandbox_mode' === $select_mode ) {
+			$this->ws_pk = $this->ws_gateway->get_option( 'test_publishable_key' );
+		} else {
+			$this->ws_pk = $this->ws_gateway->get_option( 'live_publishable_key' );
+		}
+		$this->ws_stripe_account_id = $this->ws_gateway->get_option( 'stripe_account_id' );
 
 	}
 
@@ -131,17 +184,12 @@ class Wonkasoft_Stripe_Public {
 	 * @since 1.0.0
 	 */
 	public function add_wonkasoft_stripe_buttons() {
-		$stripe                = new WC_Gateway_Wonkasoft_Stripe_Gateway();
-		$stripe_payment_method = $stripe->get_option( 'payment_method' );
-		$output                = array();
-
-		if ( 'express' === $stripe_payment_method || 'express_normal' === $stripe_payment_method ) {
-			$output['gpay']      = '<button type="button" id="g-pay-btn" class="wonka-btn">';
-			$output['gpay']     .= '</button>';
-			$output['applepay']  = '<button type="button" id="apple-pay-btn" class="wonka-btn">';
-			$output['applepay'] .= '</button>';
-			return $output;
-		}
+		$output              = array();
+		$output['gpay']      = '<button type="button" id="g-pay-btn" class="wonka-btn">';
+		$output['gpay']     .= '</button>';
+		$output['applepay']  = '<button type="button" id="apple-pay-btn" class="wonka-btn">';
+		$output['applepay'] .= '</button>';
+		return $output;
 	}
 
 	/**
@@ -155,7 +203,7 @@ class Wonkasoft_Stripe_Public {
 			'wonkasoft/v2',
 			'/wonkasoft-stripe-payment/',
 			array(
-				'methods'  => array( 'GET' ),
+				'methods'  => array( 'GET', 'POST' ),
 				'callback' => array( $this, 'wc_rest_payment_endpoint_handler' ),
 			),
 			false
@@ -173,8 +221,9 @@ class Wonkasoft_Stripe_Public {
 		$parameters = $request->get_params();
 		$ev         = wp_unslash( $parameters['this_ev'] );
 
+		// $order_id       = WC()->wc_create_order();
 		$payment_method = sanitize_text_field( $parameters['payment_method'] );
-		$payment_token  = sanitize_text_field( $parameters['payment_token'] );
+		$payment_token  = sanitize_text_field( $parameters['token'] );
 		$error          = new WP_Error();
 		$response       = array(
 			'payment_method' => $payment_method,
@@ -188,7 +237,26 @@ class Wonkasoft_Stripe_Public {
 
 	}
 
+	/**
+	 * Loading Stripe once user lands on the checkout page.
+	 *
+	 * @param  object $checkout variable is empty at this time.
+	 */
 	public function wonkasoft_stripe_checkout_init( $checkout ) {
+
+		$wonkasoft_stripe_enabled = $this->ws_gateway->get_option( 'enabled' );
+
+		if ( 'yes' !== $wonkasoft_stripe_enabled ) {
+			return;
+		}
+
+		$wonkasoft_stripe_select_mode = $this->ws_gateway->get_option( 'select_mode' );
+
+		if ( 'sandbox_mode' === $wonkasoft_stripe_select_mode ) {
+			$wonkasoft_stripe_key = $this->ws_gateway->get_option( 'test_secret_key' );
+		} else {
+			$wonkasoft_stripe_key = $this->ws_gateway->get_option( 'live_secret_key' );
+		}
 
 		$stripe = new \Stripe\Stripe();
 		\Stripe\Stripe::setAppInfo(
@@ -197,24 +265,33 @@ class Wonkasoft_Stripe_Public {
 			'https://wonkasoft.com/wonkasoft-stripe',
 			''
 		);
-		$wonkasoft_stripe_gw          = new WC_Gateway_Wonkasoft_Stripe_Gateway();
-		$wonkasoft_stripe_select_mode = $wonkasoft_stripe_gw->get_option( 'select_mode' );
-		if ( 'sandbox_mode' === $wonkasoft_stripe_select_mode ) {
-			$wonkasoft_stripe_key = $wonkasoft_stripe_gw->get_option( 'test_publishable_key' );
-		} else {
-			$wonkasoft_stripe_key = $wonkasoft_stripe_gw->get_option( 'live_publishable_key' );
+
+		if ( empty( $wonkasoft_stripe_key ) ) {
+			$this->ws_gateway->parse_woocommerce_notices( 'Your Stripe Api Key has not been set in the Wonkasoft Stripe settings.' );
 		}
+
 		\Stripe\Stripe::setApiKey( $wonkasoft_stripe_key );
 		\Stripe\Stripe::setApiVersion( '2019-11-05' );
 
-		global $woocommerce;
 		if ( ! isset( $_SERVER['HTTPS'] ) ) {
-			echo 'Present an error to the user';
-		} else {
-			// echo "<pre>\n";
-			// print_r( $woocommerce );
-			// echo "</pre>\n";
+			$this->ws_gateway->parse_woocommerce_notices( 'There is something that is preventing your connection from being secure.' );
 		}
+
+		$current_domain = str_replace( 'https://', '', get_site_url() );
+
+		try {
+			\Stripe\ApplePayDomain::create(
+				array(
+					'domain_name' => $current_domain,
+				)
+			);
+
+		} catch ( Exception $e ) {
+			$this->ws_gateway->parse_woocommerce_notices( $e );
+		}
+
+		$this->ws_gateway->parse_buttons_on_hook();
+
 	}
 
 	/**
@@ -224,8 +301,7 @@ class Wonkasoft_Stripe_Public {
 	 * @return array returns available gateways.
 	 */
 	public function wonkasoft_stripe_check_for_express_only( $available_gateways ) {
-		$wonkasoft_stripe_gw             = new WC_Gateway_Wonkasoft_Stripe_Gateway();
-		$wonkasoft_stripe_payment_method = $wonkasoft_stripe_gw->get_option( 'payment_method' );
+		$wonkasoft_stripe_payment_method = $this->ws_gateway->get_option( 'payment_method' );
 
 		if ( 'express' === $wonkasoft_stripe_payment_method && array_key_exists( 'wonkasoft_stripe', $available_gateways ) ) {
 			unset( $available_gateways['wonkasoft_stripe'] );

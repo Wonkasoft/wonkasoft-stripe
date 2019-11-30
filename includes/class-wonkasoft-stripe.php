@@ -161,8 +161,9 @@ class Wonkasoft_Stripe {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'plugins_loaded', $plugin_admin, 'init_wonkasoft_stripe_gateway' );
-		$this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_admin, 'add_wonkasoft_stripe_gateway' );
 		$this->loader->add_action( 'init', $plugin_admin, 'wonkasoft_stripe_ajax_requests' );
+
+		$this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_admin, 'add_wonkasoft_stripe_gateway' );
 
 	}
 
@@ -179,10 +180,11 @@ class Wonkasoft_Stripe {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles', 50 );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts', 50 );
-		$this->loader->add_filter( 'woocommerce_available_payment_gateways', $plugin_public, 'wonkasoft_stripe_check_for_express_only', 10 );
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'wc_rest_payment_endpoints', 50 );
+		$this->loader->add_action( 'plugins_loaded', $plugin_public, 'init_public_wonkasoft_stripe_gateway' );
 		$this->loader->add_action( 'woocommerce_before_checkout_form', $plugin_public, 'wonkasoft_stripe_checkout_init', 50 );
 
+		$this->loader->add_filter( 'woocommerce_available_payment_gateways', $plugin_public, 'wonkasoft_stripe_check_for_express_only', 10 );
 	}
 
 	/**

@@ -102,7 +102,7 @@ class Wonkasoft_Stripe_Admin {
 
 
 	/**
-	 *
+	 * Loading required files.
 	 */
 	public function init_wonkasoft_stripe_gateway() {
 
@@ -111,11 +111,6 @@ class Wonkasoft_Stripe_Admin {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wc-gateway-wonkasoft-stripe-gateway.php';
 
-		/**
-		 * This sets the namespace for the Stripe Api.
-		 */
-
-		// require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/stripe-api/Stripe.php';
 	}
 
 	/**
@@ -134,7 +129,7 @@ class Wonkasoft_Stripe_Admin {
 	 */
 	public function wonkasoft_stripe_ajax_requests() {
 
-		require_once WONKASOFT_STRIPE_PATH . 'admin/class-wonkasoft-stripe-admin-ajax-requests.php';
+		require_once WONKASOFT_STRIPE_PATH . 'admin/class-wonkasoft-stripe-payment-requests.php';
 	}
 
 }
