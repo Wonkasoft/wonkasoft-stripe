@@ -111,6 +111,16 @@ class Wonkasoft_Stripe {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wonkasoft-stripe-i18n.php';
 
 		/**
+		 * The Wonkasoft Stripe logger handler.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wonkasoft-stripe-logger.php';
+
+		/**
+		 * The Wonkasoft Stripe Helper.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wonkasoft-stripe-helper.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wonkasoft-stripe-admin.php';

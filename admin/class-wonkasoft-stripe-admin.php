@@ -111,6 +111,16 @@ class Wonkasoft_Stripe_Admin {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wc-gateway-wonkasoft-stripe-gateway.php';
 
+		/**
+		 * The Wonkasoft Stripe Payment Gateway.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/abstracts/abstract-wonkasoft-stripe-payment-gateway.php';
+
+		/**
+		 * The Wonkasoft Stripe webhook handler.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wonkasoft-stripe-webhook-handler.php';
+
 	}
 
 	/**
@@ -119,7 +129,7 @@ class Wonkasoft_Stripe_Admin {
 	 * @since 1.0.0
 	 */
 	public function add_wonkasoft_stripe_gateway( $methods ) {
-		$methods[] = 'WC_Gateway_Wonkasoft_Stripe_Gateway';
+		$methods[] = 'Wonkasoft_Stripe_WC_Gateway';
 
 		return $methods;
 	}

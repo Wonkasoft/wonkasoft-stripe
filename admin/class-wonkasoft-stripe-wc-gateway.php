@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * This the class for Wonkasoft Strip Gateway.
  */
-class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
+class Wonkasoft_Stripe_WC_Gateway extends WC_Payment_Gateway {
 
 	/**
 	 * ID of the gateway.
@@ -249,7 +249,7 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	 */
 	public function display_admin_settings_webhook_description() {
 		/* translators: 1) webhook url */
-		return sprintf( __( 'You must add the following webhook endpoint <strong style="background-color:#ddd;">&nbsp;%s&nbsp;</strong> to your <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">Stripe account settings</a>. This will enable you to receive notifications on the charge statuses.', 'woocommerce-gateway-stripe' ), $this->get_webhook_url() );
+		return sprintf( __( 'You must add the following webhook endpoint <strong style="background-color:#ddd;">&nbsp;%s&nbsp;</strong> to your <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">Stripe account settings</a>. This will enable you to receive notifications on the charge statuses.', 'wonkasoft-stripe' ), $this->get_webhook_url() );
 	}
 
 	/**
@@ -262,7 +262,7 @@ class WC_Gateway_Wonkasoft_Stripe_Gateway extends WC_Payment_Gateway {
 	 * @return string
 	 */
 	public static function get_webhook_url() {
-		return add_query_arg( 'wc-api', 'wc_stripe', trailingslashit( get_home_url() ) );
+		return add_query_arg( 'wc-api', 'wonkasoft_stripe', trailingslashit( get_home_url() ) );
 	}
 
 	/**
