@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-abstract class Wonkasoft_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
+abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway_CC {
 	/**
 	 * Displays the admin settings webhook description.
 	 *

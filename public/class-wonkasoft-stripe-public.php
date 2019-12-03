@@ -82,7 +82,7 @@ class Wonkasoft_Stripe_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
-		if ( class_exists( 'Wonkasoft_Stripe_WC_Gateway' ) && empty( $this->ws_gateway ) ) {
+		if ( class_exists( 'Wonkasoft_Stripe_WC_Payment_Gateway' ) && empty( $this->ws_gateway ) ) {
 			$this->init_public_wonkasoft_stripe_gateway();
 		}
 	}
@@ -167,7 +167,7 @@ class Wonkasoft_Stripe_Public {
 	 * This sets the Wonkasoft Stripe Gateway public instance.
 	 */
 	public function init_public_wonkasoft_stripe_gateway() {
-		$this->ws_gateway = new Wonkasoft_Stripe_WC_Gateway();
+		$this->ws_gateway = new Wonkasoft_Stripe_WC_Payment_Gateway();
 		$select_mode      = $this->ws_gateway->get_option( 'select_mode' );
 		if ( 'sandbox_mode' === $select_mode ) {
 			$this->ws_pk = $this->ws_gateway->get_option( 'test_publishable_key' );

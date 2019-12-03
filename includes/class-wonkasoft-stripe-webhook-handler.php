@@ -4,13 +4,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class WC_Stripe_Webhook_Handler.
+ * Class Wonkasoft_Stripe_Webhook_Handler.
  *
  * Handles webhooks from Stripe on sources that are not immediately chargeable.
  *
  * @since 1.0.0
  */
-class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_Payment_Gateway {
+class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gateway_CC {
 	/**
 	 * Delay of retries.
 	 *
@@ -40,7 +40,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_Payment_Gateway 
 	 */
 	public function __construct() {
 		$this->retry_interval = 2;
-		$wonkasoft_stripe_gw  = new Wonkasoft_Stripe_Payment_Gateway();
+		$wonkasoft_stripe_gw  = new Wonkasoft_Stripe_WC_Payment_Gateway();
 
 		// $stripe_settings = get_option( 'woocommerce_stripe_settings', array() );
 
@@ -794,4 +794,4 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_Payment_Gateway 
 	}
 }
 
-new WC_Stripe_Webhook_Handler();
+new Wonkasoft_Stripe_Webhook_Handler();

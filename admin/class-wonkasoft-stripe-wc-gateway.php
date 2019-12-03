@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * This the class for Wonkasoft Strip Gateway.
  */
-class Wonkasoft_Stripe_WC_Gateway extends WC_Payment_Gateway {
+class Wonkasoft_Stripe_WC_Payment_Gateway extends WC_Payment_Gateway {
 
 	/**
 	 * ID of the gateway.
