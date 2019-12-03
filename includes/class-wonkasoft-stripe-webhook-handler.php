@@ -222,7 +222,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 					$wc_token->delete();
 					$localized_message = __( 'This card is no longer available and has been removed.', 'woocommerce-gateway-stripe' );
 					$order->add_order_note( $localized_message );
-					throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+					throw new Wonkasoft_Stripe_Exception( print_r( $response, true ), $localized_message );
 				}
 
 				// We want to retry.
@@ -241,7 +241,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 					} else {
 						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'woocommerce-gateway-stripe' );
 						$order->add_order_note( $localized_message );
-						throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+						throw new Wonkasoft_Stripe_Exception( print_r( $response, true ), $localized_message );
 					}
 				}
 
@@ -255,7 +255,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 
 				$order->add_order_note( $localized_message );
 
-				throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+				throw new Wonkasoft_Stripe_Exception( print_r( $response, true ), $localized_message );
 			}
 
 			// To prevent double processing the order on WC side.
@@ -267,10 +267,10 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 
 			$this->process_response( $response, $order );
 
-		} catch ( WC_Stripe_Exception $e ) {
+		} catch ( Wonkasoft_Stripe_Exception $e ) {
 			Wonkasoft_Stripe_Logger::log( 'Error: ' . $e->getMessage() );
 
-			do_action( 'wc_gateway_stripe_process_webhook_payment_error', $order, $notification, $e );
+			do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification, $e );
 
 			$statuses = array( 'pending', 'failed' );
 
@@ -299,7 +299,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 		/* translators: 1) The URL to the order. */
 		$order->update_status( 'on-hold', sprintf( __( 'A dispute was created for this order. Response is needed. Please go to your <a href="%s" title="Stripe Dashboard" target="_blank">Stripe Dashboard</a> to review this dispute.', 'woocommerce-gateway-stripe' ), $this->get_transaction_url( $order ) ) );
 
-		do_action( 'wc_gateway_stripe_process_webhook_payment_error', $order, $notification );
+		do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification );
 
 		$order_id = Wonkasoft_Stripe_Helper::is_wc_lt( '3.0' ) ? $order->id : $order->get_id();
 		$this->send_failed_order_email( $order_id );
@@ -431,7 +431,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 
 		$order->update_status( 'failed', __( 'This payment failed to clear.', 'woocommerce-gateway-stripe' ) );
 
-		do_action( 'wc_gateway_stripe_process_webhook_payment_error', $order, $notification );
+		do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification );
 	}
 
 	/**
@@ -465,7 +465,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 			$order->update_status( 'cancelled', __( 'This payment has cancelled.', 'woocommerce-gateway-stripe' ) );
 		}
 
-		do_action( 'wc_gateway_stripe_process_webhook_payment_error', $order, $notification );
+		do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification );
 	}
 
 	/**
@@ -688,7 +688,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 			/* translators: 1) The error message that was received from Stripe. */
 			$order->update_status( 'failed', sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'woocommerce-gateway-stripe' ), $error_message ) );
 
-			do_action( 'wc_gateway_stripe_process_webhook_payment_error', $order, $notification );
+			do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification );
 
 			$this->send_failed_order_email( $order_id );
 		}

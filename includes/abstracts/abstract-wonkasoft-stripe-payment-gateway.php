@@ -227,7 +227,7 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 	public function validate_minimum_order_amount( $order ) {
 		if ( $order->get_total() * 100 < Wonkasoft_Stripe_Helper::get_minimum_amount() ) {
 			/* translators: 1) dollar amount */
-			throw new WC_Stripe_Exception( 'Did not meet minimum amount', sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'wonkasoft-stripe' ), wc_price( Wonkasoft_Stripe_Helper::get_minimum_amount() / 100 ) ) );
+			throw new Wonkasoft_Stripe_Exception( 'Did not meet minimum amount', sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'wonkasoft-stripe' ), wc_price( Wonkasoft_Stripe_Helper::get_minimum_amount() / 100 ) ) );
 		}
 	}
 
@@ -429,7 +429,7 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 			if ( 'failed' === $response->status ) {
 				$localized_message = __( 'Payment processing failed. Please retry.', 'wonkasoft-stripe' );
 				$order->add_order_note( $localized_message );
-				throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+				throw new Wonkasoft_Stripe_Exception( print_r( $response, true ), $localized_message );
 			}
 		} else {
 			Wonkasoft_Stripe_Helper::is_wc_lt( '3.0' ) ? update_post_meta( $order_id, '_transaction_id', $response->id ) : $order->set_transaction_id( $response->id );
@@ -520,7 +520,7 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 		$source_object = WC_Stripe_API::retrieve( 'sources/' . $source_id );
 
 		if ( ! empty( $source_object->error ) ) {
-			throw new WC_Stripe_Exception( print_r( $source_object, true ), $source_object->error->message );
+			throw new Wonkasoft_Stripe_Exception( print_r( $source_object, true ), $source_object->error->message );
 		}
 
 		return $source_object;
@@ -607,7 +607,7 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 				$response = $customer->add_source( $source_object->id );
 
 				if ( ! empty( $response->error ) ) {
-					throw new WC_Stripe_Exception( print_r( $response, true ), $response->error->message );
+					throw new Wonkasoft_Stripe_Exception( print_r( $response, true ), $response->error->message );
 				}
 			}
 		} elseif ( $this->is_using_saved_payment_method() ) {
@@ -617,7 +617,7 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 
 			if ( ! $wc_token || $wc_token->get_user_id() !== get_current_user_id() ) {
 				WC()->session->set( 'refresh_totals', true );
-				throw new WC_Stripe_Exception( 'Invalid payment method', __( 'Invalid payment method. Please input a new card number.', 'wonkasoft-stripe' ) );
+				throw new Wonkasoft_Stripe_Exception( 'Invalid payment method', __( 'Invalid payment method. Please input a new card number.', 'wonkasoft-stripe' ) );
 			}
 
 			$source_id = $wc_token->get_token();
@@ -634,7 +634,7 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 				$response = $customer->add_source( $stripe_token );
 
 				if ( ! empty( $response->error ) ) {
-					throw new WC_Stripe_Exception( print_r( $response, true ), $response->error->message );
+					throw new Wonkasoft_Stripe_Exception( print_r( $response, true ), $response->error->message );
 				}
 			} else {
 				$source_id = $stripe_token;
