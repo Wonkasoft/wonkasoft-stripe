@@ -220,7 +220,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 					// Source param wrong? The CARD may have been deleted on stripe's end. Remove token and show message.
 					$wc_token = WC_Payment_Tokens::get( $prepared_source->token_id );
 					$wc_token->delete();
-					$localized_message = __( 'This card is no longer available and has been removed.', 'woocommerce-gateway-stripe' );
+					$localized_message = __( 'This card is no longer available and has been removed.', 'wonkasoft-stripe' );
 					$order->add_order_note( $localized_message );
 					throw new Wonkasoft_Stripe_Exception( print_r( $response, true ), $localized_message );
 				}
@@ -239,7 +239,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 						$this->retry_interval++;
 						return $this->process_webhook_payment( $notification, true );
 					} else {
-						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'woocommerce-gateway-stripe' );
+						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'wonkasoft-stripe' );
 						$order->add_order_note( $localized_message );
 						throw new Wonkasoft_Stripe_Exception( print_r( $response, true ), $localized_message );
 					}
@@ -263,14 +263,14 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 				return;
 			}
 
-			do_action( 'wc_gateway_stripe_process_webhook_payment', $response, $order );
+			do_action( 'wonkasoft_stripe_process_webhook_payment', $response, $order );
 
 			$this->process_response( $response, $order );
 
 		} catch ( Wonkasoft_Stripe_Exception $e ) {
 			Wonkasoft_Stripe_Logger::log( 'Error: ' . $e->getMessage() );
 
-			do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification, $e );
+			do_action( 'wonkasoft_stripe_process_webhook_payment_error', $order, $notification, $e );
 
 			$statuses = array( 'pending', 'failed' );
 
@@ -297,9 +297,9 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 		}
 
 		/* translators: 1) The URL to the order. */
-		$order->update_status( 'on-hold', sprintf( __( 'A dispute was created for this order. Response is needed. Please go to your <a href="%s" title="Stripe Dashboard" target="_blank">Stripe Dashboard</a> to review this dispute.', 'woocommerce-gateway-stripe' ), $this->get_transaction_url( $order ) ) );
+		$order->update_status( 'on-hold', sprintf( __( 'A dispute was created for this order. Response is needed. Please go to your <a href="%s" title="Stripe Dashboard" target="_blank">Stripe Dashboard</a> to review this dispute.', 'wonkasoft-stripe' ), $this->get_transaction_url( $order ) ) );
 
-		do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification );
+		do_action( 'wonkasoft_stripe_process_webhook_payment_error', $order, $notification );
 
 		$order_id = Wonkasoft_Stripe_Helper::is_wc_lt( '3.0' ) ? $order->id : $order->get_id();
 		$this->send_failed_order_email( $order_id );
@@ -343,12 +343,12 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 					$order->set_total( $partial_amount );
 					$this->update_fees( $order, $notification->data->object->refunds->data[0]->balance_transaction );
 					/* translators: partial captured amount */
-					$order->add_order_note( sprintf( __( 'This charge was partially captured via Stripe Dashboard in the amount of: %s', 'woocommerce-gateway-stripe' ), $partial_amount ) );
+					$order->add_order_note( sprintf( __( 'This charge was partially captured via Stripe Dashboard in the amount of: %s', 'wonkasoft-stripe' ), $partial_amount ) );
 				} else {
 					$order->payment_complete( $notification->data->object->id );
 
 					/* translators: transaction id */
-					$order->add_order_note( sprintf( __( 'Stripe charge complete (Charge ID: %s)', 'woocommerce-gateway-stripe' ), $notification->data->object->id ) );
+					$order->add_order_note( sprintf( __( 'Stripe charge complete (Charge ID: %s)', 'wonkasoft-stripe' ), $notification->data->object->id ) );
 				}
 
 				if ( is_callable( array( $order, 'save' ) ) ) {
@@ -400,7 +400,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 		$order->payment_complete( $notification->data->object->id );
 
 		/* translators: transaction id */
-		$order->add_order_note( sprintf( __( 'Stripe charge complete (Charge ID: %s)', 'woocommerce-gateway-stripe' ), $notification->data->object->id ) );
+		$order->add_order_note( sprintf( __( 'Stripe charge complete (Charge ID: %s)', 'wonkasoft-stripe' ), $notification->data->object->id ) );
 
 		if ( is_callable( array( $order, 'save' ) ) ) {
 			$order->save();
@@ -429,9 +429,9 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 			return;
 		}
 
-		$order->update_status( 'failed', __( 'This payment failed to clear.', 'woocommerce-gateway-stripe' ) );
+		$order->update_status( 'failed', __( 'This payment failed to clear.', 'wonkasoft-stripe' ) );
 
-		do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification );
+		do_action( 'wonkasoft_stripe_process_webhook_payment_error', $order, $notification );
 	}
 
 	/**
@@ -462,10 +462,10 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 		}
 
 		if ( ! $order->has_status( 'cancelled' ) ) {
-			$order->update_status( 'cancelled', __( 'This payment has cancelled.', 'woocommerce-gateway-stripe' ) );
+			$order->update_status( 'cancelled', __( 'This payment has cancelled.', 'wonkasoft-stripe' ) );
 		}
 
-		do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification );
+		do_action( 'wonkasoft_stripe_process_webhook_payment_error', $order, $notification );
 	}
 
 	/**
@@ -497,7 +497,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 
 			// Only refund captured charge.
 			if ( $charge ) {
-				$reason = ( isset( $captured ) && 'yes' === $captured ) ? __( 'Refunded via Stripe Dashboard', 'woocommerce-gateway-stripe' ) : __( 'Pre-Authorization Released via Stripe Dashboard', 'woocommerce-gateway-stripe' );
+				$reason = ( isset( $captured ) && 'yes' === $captured ) ? __( 'Refunded via Stripe Dashboard', 'wonkasoft-stripe' ) : __( 'Pre-Authorization Released via Stripe Dashboard', 'wonkasoft-stripe' );
 
 				// Create the refund.
 				$refund = wc_create_refund(
@@ -525,7 +525,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 				}
 
 				/* translators: 1) dollar amount 2) transaction id 3) refund message */
-				$refund_message = ( isset( $captured ) && 'yes' === $captured ) ? sprintf( __( 'Refunded %1$s - Refund ID: %2$s - %3$s', 'woocommerce-gateway-stripe' ), $amount, $notification->data->object->refunds->data[0]->id, $reason ) : __( 'Pre-Authorization Released via Stripe Dashboard', 'woocommerce-gateway-stripe' );
+				$refund_message = ( isset( $captured ) && 'yes' === $captured ) ? sprintf( __( 'Refunded %1$s - Refund ID: %2$s - %3$s', 'wonkasoft-stripe' ), $amount, $notification->data->object->refunds->data[0]->id, $reason ) : __( 'Pre-Authorization Released via Stripe Dashboard', 'wonkasoft-stripe' );
 
 				$order->add_order_note( $refund_message );
 			}
@@ -556,7 +556,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 		}
 
 		/* translators: 1) The URL to the order. 2) The reason type. */
-		$message = sprintf( __( 'A review has been opened for this order. Action is needed. Please go to your <a href="%1$s" title="Stripe Dashboard" target="_blank">Stripe Dashboard</a> to review the issue. Reason: (%2$s)', 'woocommerce-gateway-stripe' ), $this->get_transaction_url( $order ), $notification->data->object->reason );
+		$message = sprintf( __( 'A review has been opened for this order. Action is needed. Please go to your <a href="%1$s" title="Stripe Dashboard" target="_blank">Stripe Dashboard</a> to review the issue. Reason: (%2$s)', 'wonkasoft-stripe' ), $this->get_transaction_url( $order ), $notification->data->object->reason );
 
 		if ( apply_filters( 'wc_stripe_webhook_review_change_order_status', true, $order, $notification ) ) {
 			$order->update_status( 'on-hold', $message );
@@ -589,7 +589,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 		}
 
 		/* translators: 1) The reason type. */
-		$message = sprintf( __( 'The opened review for this order is now closed. Reason: (%s)', 'woocommerce-gateway-stripe' ), $notification->data->object->reason );
+		$message = sprintf( __( 'The opened review for this order is now closed. Reason: (%s)', 'wonkasoft-stripe' ), $notification->data->object->reason );
 
 		if ( $order->has_status( 'on-hold' ) ) {
 			if ( apply_filters( 'wc_stripe_webhook_review_change_order_status', true, $order, $notification ) ) {
@@ -677,7 +677,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 			$charge = end( $intent->charges->data );
 			Wonkasoft_Stripe_Logger::log( "Stripe PaymentIntent $intent->id succeeded for order $order_id" );
 
-			do_action( 'wc_gateway_stripe_process_payment', $charge, $order );
+			do_action( 'wonkasoft_stripe_process_payment', $charge, $order );
 
 			// Process valid response.
 			$this->process_response( $charge, $order );
@@ -686,9 +686,9 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 			$error_message = $intent->last_payment_error ? $intent->last_payment_error->message : '';
 
 			/* translators: 1) The error message that was received from Stripe. */
-			$order->update_status( 'failed', sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'woocommerce-gateway-stripe' ), $error_message ) );
+			$order->update_status( 'failed', sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'wonkasoft-stripe' ), $error_message ) );
 
-			do_action( 'wonkasoft_gateway_stripe_process_webhook_payment_error', $order, $notification );
+			do_action( 'wonkasoft_stripe_process_webhook_payment_error', $order, $notification );
 
 			$this->send_failed_order_email( $order_id );
 		}
@@ -725,7 +725,7 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 			$error_message = $intent->last_setup_error ? $intent->last_setup_error->message : '';
 
 			/* translators: 1) The error message that was received from Stripe. */
-			$order->update_status( 'failed', sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'woocommerce-gateway-stripe' ), $error_message ) );
+			$order->update_status( 'failed', sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'wonkasoft-stripe' ), $error_message ) );
 
 			$this->send_failed_order_email( $order_id );
 		}

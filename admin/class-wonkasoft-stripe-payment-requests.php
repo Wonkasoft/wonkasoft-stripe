@@ -87,7 +87,7 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Payment_Requests' ) ) {
 		 */
 		public function create_order() {
 			if ( WC()->cart->is_empty() ) {
-				wp_send_json_error( __( 'Empty cart', 'woocommerce-gateway-stripe' ) );
+				wp_send_json_error( __( 'Empty cart', 'wonkasoft-stripe' ) );
 			}
 
 			if ( ! defined( 'WOOCOMMERCE_CHECKOUT' ) ) {
