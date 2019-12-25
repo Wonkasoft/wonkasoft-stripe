@@ -42,13 +42,14 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 		$this->retry_interval = 2;
 		$wonkasoft_stripe_gw  = new Wonkasoft_Stripe_WC_Payment_Gateway();
 
-		// $stripe_settings = get_option( 'woocommerce_stripe_settings', array() );
+		$wonkasoft_stripe_settings = get_option( 'wonkasoft_stripe_settings', array() );
 
-		// $this->testmode = ( ! empty( $stripe_settings['testmode'] ) && 'yes' === $stripe_settings['testmode'] ) ? true : false;
-		// $secret_key     = ( $this->testmode ? 'test_' : '' ) . 'webhook_secret';
-		// $this->secret   = ! empty( $stripe_settings[ $secret_key ] ) ? $stripe_settings[ $secret_key ] : false;
+		$this->testmode = ( ! empty( $wonkasoft_stripe_settings['select_mode'] ) && 'sandbox_mode' === $wonkasoft_stripe_settings['select_mode'] ) ? true : false;
+		$secret_key     = ( $this->testmode ? 'test_' : 'live_' ) . 'webhook_secret';
+		$this->secret   = ! empty( $wonkasoft_stripe_settings[ $secret_key ] ) ? $wonkasoft_stripe_settings[ $secret_key ] : false;
 
 		add_action( 'woocommerce_api_wonkasoft_stripe', array( $this, 'check_for_webhook' ) );
+
 	}
 
 	/**
@@ -195,13 +196,17 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 			// Prep source object.
 			$source_object           = new stdClass();
 			$source_object->token_id = '';
-			// $source_object->customer = $this->get_stripe_customer_id( $order );
-			$source_object->source = $source_id;
+			$source_object->customer = $this->get_stripe_customer_id( $order );
+			$source_object->source   = $source_id;
+
+			echo "<pre>\n";
+			print_r( $source_id );
+			echo "</pre>\n";
 
 			// Make the request.
 			// $response = WC_Stripe_API::request( $this->generate_payment_request( $order, $source_object ), 'charges', 'POST', true );
-			$headers  = $response['headers'];
-			$response = $response['body'];
+			// $headers  = $response['headers'];
+			// $response = $response['body'];
 
 			if ( ! empty( $response->error ) ) {
 				// Customer param wrong? The user may have been deleted on stripe's end. Remove customer_id. Can be retried without.

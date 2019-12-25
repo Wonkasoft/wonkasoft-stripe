@@ -381,11 +381,14 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 		 * @param WC_Order $order
 		 * @param object $source
 		 */
-		return apply_filters( 'wc_stripe_generate_payment_request', $post_data, $order, $prepared_source );
+		return apply_filters( 'wonkasoft_stripe_generate_payment_request', $post_data, $order, $prepared_source );
 	}
 
 	/**
 	 * Store extra meta data for an order from a Stripe Response.
+	 *
+	 * @param array $response
+	 * @param array $order
 	 */
 	public function process_response( $response, $order ) {
 		WC_Stripe_Logger::log( 'Processing response: ' . print_r( $response, true ) );
@@ -707,7 +710,7 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 			if ( $source_id ) {
 				$stripe_source = $source_id;
 				$source_object = WC_Stripe_API::retrieve( 'sources/' . $source_id );
-			} elseif ( apply_filters( 'wc_stripe_use_default_customer_source', true ) ) {
+			} elseif ( apply_filters( 'wonkasoft_stripe_use_default_customer_source', true ) ) {
 				/*
 				 * We can attempt to charge the customer's default source
 				 * by sending empty source id.

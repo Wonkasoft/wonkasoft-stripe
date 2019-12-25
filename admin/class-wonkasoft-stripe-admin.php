@@ -114,22 +114,24 @@ class Wonkasoft_Stripe_Admin {
 		/**
 		 * The Wonkasoft Stripe Payment Gateway.
 		 */
-		// require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/abstracts/abstract-wonkasoft-stripe-payment-gateway.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/abstracts/abstract-wonkasoft-stripe-payment-gateway.php';
 
 		/**
 		 * The Wonkasoft Stripe webhook handler.
 		 */
-		// require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wonkasoft-stripe-webhook-handler.php';
+
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wonkasoft-stripe-webhook-handler.php';
 	}
 
 	/**
 	 * Register Woocommerce gateway.
 	 *
 	 * @since 1.0.0
+	 * @param array $methods
 	 */
 	public function add_wonkasoft_stripe_gateways( $methods ) {
 		$methods[] = 'Wonkasoft_Stripe_WC_Payment_Gateway';
-		$methods[] = 'Wonkasoft_Stripe_WC_Payment_Gateway_CC';
+		// $methods[] = 'Wonkasoft_Stripe_WC_Payment_Gateway_CC';
 
 		return $methods;
 	}

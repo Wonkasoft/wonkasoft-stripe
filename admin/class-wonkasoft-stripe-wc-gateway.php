@@ -57,6 +57,13 @@ class Wonkasoft_Stripe_WC_Payment_Gateway extends WC_Payment_Gateway {
 	public $form_fields = array();
 
 	/**
+	 * The gateway settings.
+	 *
+	 * @var array
+	 */
+	public $current_settings = array();
+
+	/**
 	 * types of gateway supports.
 	 *
 	 * @var array
@@ -74,6 +81,12 @@ class Wonkasoft_Stripe_WC_Payment_Gateway extends WC_Payment_Gateway {
 		$this->init_settings();
 		$this->title = $this->get_option( 'title' );
 		$this->form_fields;
+
+		foreach ( $this->form_fields as $key => $value ) :
+			$this->current_settings[ $key ] = $this->get_option( $key );
+		endforeach;
+
+		update_option( 'wonkasoft_stripe_settings', $this->current_settings, $this->current_settings );
 		$this->supports = array(
 			'subscriptions',
 			'products',
@@ -92,7 +105,7 @@ class Wonkasoft_Stripe_WC_Payment_Gateway extends WC_Payment_Gateway {
 	public function init_form_fields() {
 
 		$this->form_fields = apply_filters(
-			'wonkasoft_stripe_settings',
+			'wonkasoft_wc_stripe_settings',
 			array(
 				'enabled'                 => array(
 					'title'       => __( 'Enable/Disable', 'wonkasoft-stripe' ),

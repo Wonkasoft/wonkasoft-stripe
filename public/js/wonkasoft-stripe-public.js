@@ -64,7 +64,8 @@
 			},
 			processSource: function( source, paymentRequestType ) {
 				var data = wonkasoft_stripe_payment_request.getOrderData( source, paymentRequestType );
-
+				console.log( WS_STRIPE.ws_ajax );
+				console.log( wonkasoft_stripe_payment_request.getAjaxURL( 'create_order' ) );
 				return $.ajax( {
 					type:    'POST',
 					data:    data,

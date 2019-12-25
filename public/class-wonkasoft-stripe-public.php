@@ -133,7 +133,7 @@ class Wonkasoft_Stripe_Public {
 			wp_enqueue_script( 'stripe', 'https://js.stripe.com/v3/', '', '3.0', true );
 			wp_enqueue_script( $this->plugin_name . 'public-js', plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-public.js', array( 'jquery' ), $this->version, true );
 			$wonkasoft_stripe_params = array(
-				'ws_ajax'            => WC_AJAX::get_endpoint( '%%endpoint%%' ),
+				'ws_ajax'            => str_replace( '/aperabags.com', '', get_site_url() ) . WC_AJAX::get_endpoint( '%%endpoint%%' ),
 				'ws_charge_endpoint' => esc_url( rest_url( '/wonkasoft/v2' ) . '/wonkasoft-stripe-payment/' ),
 				'stripe'             => array(
 					'key'        => $this->ws_pk,
@@ -204,7 +204,7 @@ class Wonkasoft_Stripe_Public {
 			'/wonkasoft-stripe-payment/',
 			array(
 				'methods'  => array( 'GET', 'POST' ),
-				'callback' => array( $this, 'wc_rest_payment_endpoint_handler' ),
+				'callback' => array( $this, 'wonkasoft_rest_payment_endpoint_handler' ),
 			),
 			false
 		);
@@ -216,7 +216,7 @@ class Wonkasoft_Stripe_Public {
 	 * @param  array $request contains the request sent to the end point.
 	 * @return [type]          [description]
 	 */
-	public function wc_rest_payment_endpoint_handler( $request = null ) {
+	public function wonkasoft_rest_payment_endpoint_handler( $request = null ) {
 
 		$parameters = $request->get_params();
 		$ev         = wp_unslash( $parameters['this_ev'] );
