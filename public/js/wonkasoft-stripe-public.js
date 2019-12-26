@@ -274,10 +274,7 @@
 
 				paymentDetails = cart.order_data;
 				var paymentRequest = stripe.paymentRequest( options );
-				var elements = stripe.elements();
-				var prButton = elements.create('paymentRequestButton', {
-				  paymentRequest: paymentRequest,
-				});
+				
 
 				// Check the availability of the Payment Request API first.
 	            paymentRequest.canMakePayment().then( function( result ) {
@@ -286,16 +283,15 @@
 	              	paymentRequestType = result.applePay ? 'apple_pay' : 'payment_request_api';
 	                  if ( null !== WS_STRIPE.stripe.btns.gpay ) 
 	                  {
-	                    // document.querySelector( '#wonkasoft-payment-request-button' ).innerHTML = WS_STRIPE.stripe.btns.gpay;
-	                    WS_STRIPE.stripe.btns.gpay.mount( '#wonkasoft-payment-request-button' );
-	                    // document.querySelector( '#g-pay-btn' ).addEventListener( 'click', function( e ) 
-	                    //     {
-	                    //         var target = e.target;
-	                    //         if ( 'BUTTON' === target.nodeName ) 
-	                    //         {
-	                    //             paymentRequest.show();
-	                    //         }
-	                    //     } );
+	                    document.querySelector( '#wonkasoft-payment-request-button' ).innerHTML = WS_STRIPE.stripe.btns.gpay;
+	                    document.querySelector( '#g-pay-btn' ).addEventListener( 'click', function( e ) 
+	                        {
+	                            var target = e.target;
+	                            if ( 'BUTTON' === target.nodeName ) 
+	                            {
+	                                paymentRequest.show();
+	                            }
+	                        } );
 	                  }
 	                  if ( true === result.applePay ) 
 	                  {
