@@ -19,22 +19,172 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Payment_Requests' ) ) {
 		public $total_label;
 
 		/**
+		 * This Instance.
+		 *
+		 * @var
+		 */
+		private static $_this;
+
+		/**
 		 * This inits the ajax requests.
 		 */
 		public function __construct() {
-			$this->total_label = ' Checkout Total';
-			add_action( 'wc_ajax_wonkasoft_stripe_get_cart_details', array( $this, 'get_cart_details' ), 10 );
-			add_action( 'wc_ajax_nopriv_wonkasoft_stripe_get_cart_details', array( $this, 'get_cart_details' ), 10 );
+			self::$_this       = $this;
+			$this->total_label = str_replace( "'", '', $this->total_label ) . apply_filters( 'wonkasoft_stripe_payment_request_total_label_suffix', ' (via WooCommerce)' );
+			add_action( 'template_redirect', array( $this, 'set_session' ) );
+			$this->init();
+		}
 
-			add_action( 'wc_ajax_wonkasoft_stripe_get_shipping_options', array( $this, 'get_shipping_options' ), 10 );
-			add_action( 'wc_ajax_nopriv_wonkasoft_stripe_get_shipping_options', array( $this, 'get_shipping_options' ), 10 );
+		/**
+		 * Get this instance.
+		 *
+		 * @since 1.0.0
+		 * @return class
+		 */
+		public static function instance() {
+			return self::$_this;
+		}
 
-			add_action( 'wc_ajax_wonkasoft_stripe_update_shipping_method', array( $this, 'update_shipping_method' ), 10 );
-			add_action( 'wc_ajax_nopriv_wonkasoft_stripe_update_shipping_method', array( $this, 'update_shipping_method' ), 10 );
+		/**
+		 * Sets the WC customer session if one is not set.
+		 * This is needed so nonces can be verified by AJAX Request.
+		 *
+		 * @since 1.0.0
+		 */
+		public function set_session() {
+			if ( ! is_product() || ( isset( WC()->session ) && WC()->session->has_session() ) ) {
+				return;
+			}
 
-			add_action( 'wc_ajax_wonkasoft_stripe_create_order', array( $this, 'create_order' ), 10 );
-			add_action( 'wc_ajax_nopriv_wonkasoft_stripe_create_order', array( $this, 'create_order' ), 10 );
+			$session_class = apply_filters( 'woocommerce_session_handler', 'WC_Session_Handler' );
+			$wc_session    = new $session_class();
 
+			if ( version_compare( WC_VERSION, '3.3', '>=' ) ) {
+				$wc_session->init();
+			}
+
+			$wc_session->set_customer_session_cookie( true );
+		}
+
+		/**
+		 * Initialize hooks.
+		 *
+		 * @since 1.0.0
+		 * @version 1.0.0
+		 */
+		public function init() {
+			add_action( 'wc_ajax_wonkasoft_stripe_get_cart_details', array( $this, 'ajax_get_cart_details' ), 10 );
+			add_action( 'wc_ajax_nopriv_wonkasoft_stripe_get_cart_details', array( $this, 'ajax_get_cart_details' ), 10 );
+
+			add_action( 'wc_ajax_wonkasoft_stripe_get_shipping_options', array( $this, 'ajax_get_shipping_options' ), 10 );
+			add_action( 'wc_ajax_nopriv_wonkasoft_stripe_get_shipping_options', array( $this, 'ajax_get_shipping_options' ), 10 );
+
+			add_action( 'wc_ajax_wonkasoft_stripe_update_shipping_method', array( $this, 'ajax_update_shipping_method' ), 10 );
+			add_action( 'wc_ajax_nopriv_wonkasoft_stripe_update_shipping_method', array( $this, 'ajax_update_shipping_method' ), 10 );
+
+			add_action( 'wc_ajax_wonkasoft_stripe_create_order', array( $this, 'ajax_create_order' ), 10 );
+			add_action( 'wc_ajax_nopriv_wonkasoft_stripe_create_order', array( $this, 'ajax_create_order' ), 10 );
+
+			add_filter( 'woocommerce_gateway_title', array( $this, 'filter_gateway_title' ), 10, 2 );
+			add_filter( 'woocommerce_validate_postcode', array( $this, 'postal_code_validation' ), 10, 3 );
+
+			add_action( 'woocommerce_checkout_order_processed', array( $this, 'add_order_meta' ), 10, 2 );
+		}
+
+		/**
+		 * Filters the gateway title to reflect Payment Request type
+		 */
+		public function filter_gateway_title( $title, $id ) {
+			global $post;
+
+			if ( ! is_object( $post ) ) {
+				return $title;
+			}
+
+			if ( Wonkasoft_Stripe_Helper::is_wc_lt( '3.0' ) ) {
+				$method_title = get_post_meta( $post->ID, '_payment_method_title', true );
+			} else {
+				$order        = wc_get_order( $post->ID );
+				$method_title = is_object( $order ) ? $order->get_payment_method_title() : '';
+			}
+
+			if ( 'stripe' === $id && ! empty( $method_title ) && 'Apple Pay (Stripe)' === $method_title ) {
+				return $method_title;
+			}
+
+			if ( 'stripe' === $id && ! empty( $method_title ) && 'Chrome Payment Request (Stripe)' === $method_title ) {
+				return $method_title;
+			}
+
+			return $title;
+		}
+
+		/**
+		 * Removes postal code validation from WC.
+		 *
+		 * @since 1.0.0
+		 * @version 1.0.0
+		 */
+		public function postal_code_validation( $valid, $postcode, $country ) {
+			$gateways = WC()->payment_gateways->get_available_payment_gateways();
+
+			if ( ! isset( $gateways['stripe'] ) ) {
+				return $valid;
+			}
+
+			$payment_request_type = isset( $_POST['payment_request_type'] ) ? wc_clean( $_POST['payment_request_type'] ) : '';
+
+			if ( 'apple_pay' !== $payment_request_type ) {
+				return $valid;
+			}
+
+			/**
+			 * Currently Apple Pay truncates postal codes from UK and Canada to first 3 characters
+			 * when passing it back from the shippingcontactselected object. This causes WC to invalidate
+			 * the order and not let it go through. The remedy for now is just to remove this validation.
+			 * Note that this only works with shipping providers that don't validate full postal codes.
+			 */
+			if ( 'GB' === $country || 'CA' === $country ) {
+				return true;
+			}
+
+			return $valid;
+		}
+
+		/**
+		 * Add needed order meta
+		 *
+		 * @since 1.0.0
+		 * @version 1.0.0
+		 * @param int   $order_id
+		 * @param array $posted_data The posted data from checkout form.
+		 */
+		public function add_order_meta( $order_id, $posted_data ) {
+			if ( empty( $_POST['payment_request_type'] ) ) {
+				return;
+			}
+
+			$order = wc_get_order( $order_id );
+
+			$payment_request_type = wc_clean( $_POST['payment_request_type'] );
+
+			if ( 'apple_pay' === $payment_request_type ) {
+				if ( Wonkasoft_Stripe_Helper::is_wc_lt( '3.0' ) ) {
+					update_post_meta( $order_id, '_payment_method_title', 'Apple Pay (Stripe)' );
+				} else {
+					$order->set_payment_method_title( 'Apple Pay (Stripe)' );
+					$order->save();
+				}
+			}
+
+			if ( 'payment_request_api' === $payment_request_type ) {
+				if ( Wonkasoft_Stripe_Helper::is_wc_lt( '3.0' ) ) {
+					update_post_meta( $order_id, '_payment_method_title', 'Chrome Payment Request (Stripe)' );
+				} else {
+					$order->set_payment_method_title( 'Chrome Payment Request (Stripe)' );
+					$order->save();
+				}
+			}
 		}
 
 		/**
@@ -85,7 +235,7 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Payment_Requests' ) ) {
 		 * @since 1.0.0
 		 * @version 1.0.0
 		 */
-		public function create_order() {
+		public function ajax_create_order() {
 			if ( WC()->cart->is_empty() ) {
 				wp_send_json_error( __( 'Empty cart', 'wonkasoft-stripe' ) );
 			}
@@ -104,7 +254,7 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Payment_Requests' ) ) {
 		/**
 		 * Update shipping method
 		 */
-		public function update_shipping_method() {
+		public function ajax_update_shipping_method() {
 			check_ajax_referer( 'ws_update_shipping', 'security' );
 
 			if ( ! defined( 'WOOCOMMERCE_CART' ) ) {
@@ -134,7 +284,7 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Payment_Requests' ) ) {
 		/**
 		 * Getting shipping options.
 		 */
-		public function get_shipping_options() {
+		public function ajax_get_shipping_options() {
 
 			check_ajax_referer( 'ws_shipping', 'security' );
 
@@ -264,7 +414,7 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Payment_Requests' ) ) {
 		/**
 		 * This request gets the cart details.
 		 */
-		public function get_cart_details() {
+		public function ajax_get_cart_details() {
 
 			check_ajax_referer( 'ws_request', 'security' );
 
