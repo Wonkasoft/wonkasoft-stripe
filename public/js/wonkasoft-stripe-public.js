@@ -64,8 +64,7 @@
 			},
 			processSource: function( source, paymentRequestType ) {
 				var data = wonkasoft_stripe_payment_request.getOrderData( source, paymentRequestType );
-				console.log( WS_STRIPE.ws_ajax );
-				console.log( wonkasoft_stripe_payment_request.getAjaxURL( 'create_order' ) );
+				
 				return $.ajax( {
 					type:    'POST',
 					data:    data,
@@ -274,12 +273,16 @@
 				};
 
 				paymentDetails = cart.order_data;
-
 				var paymentRequest = stripe.paymentRequest( options );
+				var elements = stripe.elements();
+				var prButton = elements.create('paymentRequestButton', {
+				  paymentRequest: paymentRequest,
+				});
 
 				// Check the availability of the Payment Request API first.
 	            paymentRequest.canMakePayment().then( function( result ) {
 	              if ( result ) {
+	              	console.log( result );
 	              	paymentRequestType = result.applePay ? 'apple_pay' : 'payment_request_api';
 	                  if ( null !== WS_STRIPE.stripe.btns.gpay ) 
 	                  {

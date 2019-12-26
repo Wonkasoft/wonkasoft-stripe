@@ -747,6 +747,9 @@ class Wonkasoft_Stripe_Webhook_Handler extends Wonkasoft_Stripe_WC_Payment_Gatew
 	 */
 	public function process_webhook( $request_body ) {
 		$notification = json_decode( $request_body );
+		echo "<pre>\n";
+		print_r( $notification );
+		echo "</pre>\n";
 
 		switch ( $notification->type ) {
 			case 'source.chargeable':
