@@ -169,7 +169,7 @@
 						scrollTop: element.prev( '.woocommerce-error' ).offset().top
 					}, 600 );
 				} else {
-					var $form = $( '.shop_table.cart' ).closest( 'form' );
+					var $form = $( 'form.woocommerce-checkout.checkout' );
 
 					$form.before( message );
 
