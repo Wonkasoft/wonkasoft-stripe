@@ -12,7 +12,7 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Payment_Requests' ) ) {
 	class Wonkasoft_Stripe_Payment_Requests {
 
 		/**
-		 * setting descriptors.
+		 * Setting descriptors.
 		 *
 		 * @var string
 		 */
@@ -21,7 +21,7 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Payment_Requests' ) ) {
 		/**
 		 * This Instance.
 		 *
-		 * @var
+		 * @var class
 		 */
 		private static $_this;
 

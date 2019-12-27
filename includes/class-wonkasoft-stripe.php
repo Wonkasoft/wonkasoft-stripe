@@ -121,6 +121,11 @@ class Wonkasoft_Stripe {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wonkasoft-stripe-helper.php';
 
 		/**
+		 * The Wonkasoft Stripe Customer.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wonkasoft-stripe-customer.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wonkasoft-stripe-admin.php';

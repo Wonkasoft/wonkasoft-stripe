@@ -581,12 +581,12 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 	 * @return object
 	 */
 	public function prepare_source( $user_id, $force_save_source = false, $existing_customer_id = null ) {
-		$customer = new WC_Stripe_Customer( $user_id );
+		$customer = new Wonkasoft_Stripe_Customer( $user_id );
 		if ( ! empty( $existing_customer_id ) ) {
 			$customer->set_id( $existing_customer_id );
 		}
 
-		$force_save_source = apply_filters( 'wc_stripe_force_save_source', $force_save_source, $customer );
+		$force_save_source = apply_filters( 'wonkasoft_stripe_force_save_source', $force_save_source, $customer );
 		$source_object     = '';
 		$source_id         = '';
 		$wc_token_id       = false;
@@ -679,7 +679,7 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 	 * @return object
 	 */
 	public function prepare_order_source( $order = null ) {
-		$stripe_customer = new WC_Stripe_Customer();
+		$stripe_customer = new Wonkasoft_Stripe_Customer();
 		$stripe_source   = false;
 		$token_id        = false;
 		$source_object   = false;
