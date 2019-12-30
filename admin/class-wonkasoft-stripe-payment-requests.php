@@ -245,9 +245,6 @@ if ( ! class_exists( 'Wonkasoft_Stripe_Payment_Requests' ) ) {
 			}
 
 			$this->normalize_state();
-			echo "<pre>\n";
-			print_r( WC()->session );
-			echo "</pre>\n";
 
 			WC()->checkout()->process_checkout();
 
