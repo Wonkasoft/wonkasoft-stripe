@@ -166,18 +166,16 @@
 					element.before( message );
 
 					$( 'html, body' ).animate({
-						scrollTop: element.prev( '.woocommerce-error' ).offset().top + 100
+						scrollTop: element.prev( '.woocommerce-error' ).offset().top - 100
 					}, 600 );
-					console.log( element.prev( '.woocommerce-error' ).offset().top );
 				} else {
 					var $form = $( 'form.woocommerce-checkout.checkout' );
 
 					$form.before( message );
 
 					$( 'html, body' ).animate({
-						scrollTop: $form.prev( '.woocommerce-error' ).offset().top + 100
+						scrollTop: $form.prev( '.woocommerce-error' ).offset().top - 100
 					}, 600 );
-					console.log( $form.prev( '.woocommerce-error' ).offset().top );
 				}
 			},
 
