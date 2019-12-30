@@ -265,7 +265,7 @@
 			startPaymentRequest: function( cart ) {
 				var paymentDetails,
 					options;
-
+					console.log(cart.order_data.total);
 				options = {
 					total: {
 						label: 'Cart total',
