@@ -177,7 +177,7 @@
 					$( 'html, body' ).animate({
 						scrollTop: $form.prev( '.woocommerce-error' ).offset().top + 100
 					}, 600 );
-					console.log( element.prev( '.woocommerce-error' ).offset().top );
+					console.log( $form.prev( '.woocommerce-error' ).offset().top );
 				}
 			},
 
