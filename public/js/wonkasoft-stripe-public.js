@@ -166,7 +166,7 @@
 					element.before( message );
 
 					$( 'html, body' ).animate({
-						scrollTop: element.prev( '.woocommerce-error' ).offset().top
+						scrollTop: element.prev( '.woocommerce-error' ).offset().top + 100
 					}, 600 );
 				} else {
 					var $form = $( 'form.woocommerce-checkout.checkout' );
@@ -174,7 +174,7 @@
 					$form.before( message );
 
 					$( 'html, body' ).animate({
-						scrollTop: $form.prev( '.woocommerce-error' ).offset().top
+						scrollTop: $form.prev( '.woocommerce-error' ).offset().top + 100
 					}, 600 );
 				}
 			},
@@ -328,6 +328,27 @@
 						}
 					} );												
 				} );
+
+				paymentRequest.on( 'token', function( ev ) {
+					// Send the token to your server to charge it!
+					fetch('/charges', {
+						method: 'POST',
+						body: JSON.stringify({token: ev.token.id}),
+						headers: {'content-type': 'application/json'},
+					})
+					.then(function( response ) {
+						if ( response.ok ) {
+							// Report to the browser that the payment was successful, prompting
+							// it to close the browser payment interface.
+							ev.complete('success');
+						} else {
+							// Report to the browser that the payment failed, prompting it to
+							// re-show the payment interface, or show an error message and close
+							// the payment interface.
+							ev.complete('fail');
+						}
+					});
+				});
 
 				paymentRequest.on( 'source', function( evt ) {
 					$.when( wonkasoft_stripe_payment_request.processSource( evt, paymentRequestType ) ).then( function( response ) {
