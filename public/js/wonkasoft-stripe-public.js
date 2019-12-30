@@ -134,6 +134,7 @@
 					data.shipping_city       = shipping.city;
 					data.shipping_state      = shipping.region;
 					data.shipping_postcode   = shipping.postalCode;
+					data.payment_method      = 'wonkasoft_stripe';
 				}
 
 				return data;
