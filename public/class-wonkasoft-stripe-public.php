@@ -303,9 +303,9 @@ class Wonkasoft_Stripe_Public {
 	public function wonkasoft_stripe_check_for_express_only( $available_gateways ) {
 		$wonkasoft_stripe_payment_method = $this->ws_gateway->get_option( 'payment_method' );
 
-		if ( 'express' === $wonkasoft_stripe_payment_method && array_key_exists( 'wonkasoft_stripe', $available_gateways ) ) {
-			unset( $available_gateways['wonkasoft_stripe'] );
-		}
+		// if ( 'express' === $wonkasoft_stripe_payment_method && array_key_exists( 'wonkasoft_stripe', $available_gateways ) ) {
+		// unset( $available_gateways['wonkasoft_stripe'] );
+		// }
 
 		return $available_gateways;
 	}
