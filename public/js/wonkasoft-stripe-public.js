@@ -102,15 +102,17 @@
 					billing_city:              null !== billing ? billing.city : '',
 					billing_state:             null !== billing ? billing.state : '',
 					billing_postcode:          null !== billing ? billing.postal_code : '',
-					shipping_first_name:       '',
-					shipping_last_name:        '',
+					shipping_first_name:       null !== name ? name.split( ' ' ).slice( 0, 1 ).join( ' ' ) : '',
+					shipping_last_name:        null !== name ? name.split( ' ' ).slice( 1 ).join( ' ' ) : '',
 					shipping_company:          '',
+					shipping_email:            null !== email   ? email : evt.payerEmail,
+					shipping_phone:            null !== phone   ? phone : evt.payerPhone.replace( '/[() -]/g', '' ),
 					shipping_country:          '',
-					shipping_address_1:        '',
-					shipping_address_2:        '',
-					shipping_city:             '',
-					shipping_state:            '',
-					shipping_postcode:         '',
+					shipping_address_1:        null !== shipping ? shipping.line1 : '',
+					shipping_address_2:        null !== shipping ? shipping.line2 : '',
+					shipping_city:             null !== shipping ? shipping.city : '',
+					shipping_state:            null !== shipping ? shipping.state : '',
+					shipping_postcode:         null !== shipping ? shipping.postal_code : '',
 					shipping_method:           [ null === evt.shippingOption ? null : evt.shippingOption.id ],
 					order_comments:            '',
 					payment_method:            'wonkasoft_stripe',
@@ -124,6 +126,8 @@
 					data.shipping_first_name = shipping.recipient.split( ' ' ).slice( 0, 1 ).join( ' ' );
 					data.shipping_last_name  = shipping.recipient.split( ' ' ).slice( 1 ).join( ' ' );
 					data.shipping_company    = shipping.organization;
+					data.shipping_email      = email;
+					data.shipping_phone      = phone;
 					data.shipping_country    = shipping.country;
 					data.shipping_address_1  = typeof shipping.addressLine[0] === 'undefined' ? '' : shipping.addressLine[0];
 					data.shipping_address_2  = typeof shipping.addressLine[1] === 'undefined' ? '' : shipping.addressLine[1];
@@ -166,7 +170,7 @@
 					element.before( message );
 
 					$( 'html, body' ).animate({
-						scrollTop: element.prev( '.woocommerce-error' ).offset().top - 100
+						scrollTop: element.prev( '.woocommerce-error' ).offset().top - 130
 					}, 600 );
 				} else {
 					var $form = $( 'form.woocommerce-checkout.checkout' );
@@ -174,7 +178,7 @@
 					$form.before( message );
 
 					$( 'html, body' ).animate({
-						scrollTop: $form.prev( '.woocommerce-error' ).offset().top - 100
+						scrollTop: $form.prev( '.woocommerce-error' ).offset().top - 130
 					}, 600 );
 				}
 			},
