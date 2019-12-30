@@ -267,7 +267,10 @@
 					options;
 
 				options = {
-					total: cart.order_data.total,
+					total: {
+						label: 'Cart total',
+						amount: cart.order_data.total
+					},
 					currency: cart.order_data.currency,
 					country: cart.order_data.country_code,
 					requestPayerName: true,
