@@ -195,7 +195,7 @@ class Wonkasoft_Stripe_Public {
 	/**
 	 * This function registers a rest end point.
 	 */
-	public function wc_rest_payment_endpoints() {
+	public function wonkasoft_rest_payment_endpoints() {
 		/**
 		 * Handle Payment Method request.
 		 */
