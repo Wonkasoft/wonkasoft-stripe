@@ -220,6 +220,9 @@ class Wonkasoft_Stripe_Public {
 
 		$parameters = $request->get_params();
 		$ev         = wp_unslash( $parameters['this_ev'] );
+		echo "<pre>\n";
+		print_r( $parameters );
+		echo "</pre>\n";
 
 		// $order_id       = WC()->wc_create_order();
 		$payment_method = sanitize_text_field( $parameters['payment_method'] );
@@ -234,7 +237,6 @@ class Wonkasoft_Stripe_Public {
 		);
 
 		return new WP_REST_Response( $response );
-
 	}
 
 	/**
