@@ -265,7 +265,7 @@
 			startPaymentRequest: function( cart ) {
 				var paymentDetails,
 					options;
-					console.log(cart.order_data.total);
+
 				options = {
 					total: cart.order_data.total,
 					currency: cart.order_data.currency,
@@ -284,7 +284,6 @@
 				// Check the availability of the Payment Request API first.
 	            paymentRequest.canMakePayment().then( function( result ) {
 	              if ( result ) {
-	              	console.log( result );
 	              	paymentRequestType = result.applePay ? 'apple_pay' : 'payment_request_api';
 	                  if ( null !== WS_STRIPE.stripe.btns.gpay ) 
 	                  {
@@ -334,38 +333,47 @@
 					} );												
 				} );
 
-				paymentRequest.on('token', function(evt) {
+				paymentRequest.on('token', function( evt ) {
 				  // Send the token to your server to charge it!
 				  fetch( WS_STRIPE.ws_charge_endpoint, {
 				    method: 'POST',
-				    body: JSON.stringify({token: evt.token.id}),
-				    headers: {'content-type': 'application/json'},
+				    body: JSON.stringify({
+				    	token: evt.token.id,
+				    	cart: cart
+				    }),
+				    headers: {'Content-Type': 'application/json'},
 				  } )
-				  .then(function(response) {
+				  .then( function( response ) {
 				    if (response.ok) {
 				      // Report to the browser that the payment was successful, prompting
 				      // it to close the browser payment interface.
-				  		console.log( response.json() );
-				      evt.complete('success');
+				  		return response.json();
 				    } else {
 				      // Report to the browser that the payment failed, prompting it to
 				      // re-show the payment interface, or show an error message and close
 				      // the payment interface.
 				      evt.complete('fail');
 				    }
+				  })
+				  .then( function( response ) {
+				      
+				      evt.complete('success');
+
+				      if ( 'charge' === response.data.object ) {
+					      paymentRequest.on( 'source', function( evt ) {
+					      	$.when( wonkasoft_stripe_payment_request.processSource( evt, paymentRequestType ) ).then( function( response ) {
+					      		if ( 'success' === response.result ) {
+					      			wonkasoft_stripe_payment_request.completePayment( evt, response.redirect );
+					      		} else {
+					      			wonkasoft_stripe_payment_request.abortPayment( evt, response.messages );
+					      		}
+					      	} );
+					      } );
+				      }
+
 				  });
 				});
 
-				// paymentRequest.on( 'source', function( evt ) {
-				// 		console.log(evt);
-				// 	$.when( wonkasoft_stripe_payment_request.processSource( evt, paymentRequestType ) ).then( function( response ) {
-				// 		if ( 'success' === response.result ) {
-				// 			wonkasoft_stripe_payment_request.completePayment( evt, response.redirect );
-				// 		} else {
-				// 			wonkasoft_stripe_payment_request.abortPayment( evt, response.messages );
-				// 		}
-				// 	} );
-				// } );
 			},
 
 			/**

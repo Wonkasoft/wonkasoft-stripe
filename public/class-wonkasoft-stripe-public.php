@@ -213,26 +213,49 @@ class Wonkasoft_Stripe_Public {
 	 * Handler for the payment endpoint.
 	 *
 	 * @param  array $request contains the request sent to the end point.
-	 * @return [type]          [description]
+	 * @return object          [description]
 	 */
 	public function wonkasoft_rest_payment_endpoint_handler( $request = null ) {
 
 		$parameters = $request->get_params();
-		$ev         = wp_unslash( $parameters['this_ev'] );
+
+		$gateway = new Wonkasoft_Stripe_WC_Payment_Gateway();
+
+		$wonkasoft_stripe_select_mode = $gateway->get_option( 'select_mode' );
+
+		if ( 'sandbox_mode' === $wonkasoft_stripe_select_mode ) {
+			$wonkasoft_stripe_key = $gateway->get_option( 'test_secret_key' );
+		} else {
+			$wonkasoft_stripe_key = $gateway->get_option( 'live_secret_key' );
+		}
 
 		// $order_id       = WC()->wc_create_order();
-		// $payment_method = sanitize_text_field( $parameters['payment_method'] );
-		// $payment_token  = sanitize_text_field( $parameters['token'] );
-		// $error          = new WP_Error();
-		// $response       = array(
-		// 'payment_method' => $payment_method,
-		// 'order_id'       => $order_id,
-		// 'payment_token'  => $payment_token,
-		// 'ev'             => $ev,
-		// 'error'          => $error,
-		// );
+		\Stripe\Stripe::setAppInfo(
+			'Wonkasoft Stripe for WooCommerce',
+			$this->version,
+			'https://wonkasoft.com/wonkasoft-stripe',
+			''
+		);
 
-		return wp_send_json_success( $parameters );
+		\Stripe\Stripe::setApiKey( $wonkasoft_stripe_key );
+		\Stripe\Stripe::setApiVersion( '2019-12-03' );
+
+		$current_domain = str_replace( 'https://', '', get_site_url() );
+
+		try {
+			$charge = \Stripe\Charge::create(
+				array(
+					'amount'      => $parameters['cart']['order_data']['total']['amount'],
+					'currency'    => $parameters['cart']['order_data']['currency'],
+					'description' => $parameters['cart']['order_data']['total']['label'],
+					'source'      => $parameters['token'],
+				)
+			);
+
+			return wp_send_json_success( $charge );
+		} catch ( Exception $e ) {
+			$gateway->parse_woocommerce_notices( $e );
+		}
 	}
 
 	/**
@@ -268,8 +291,8 @@ class Wonkasoft_Stripe_Public {
 			$this->ws_gateway->parse_woocommerce_notices( 'Your Stripe Api Key has not been set in the Wonkasoft Stripe settings.' );
 		}
 
-		\Stripe\Stripe::setApiKey( $wonkasoft_stripe_key );
-		\Stripe\Stripe::setApiVersion( '2019-11-05' );
+		$stripe->setApiKey( $wonkasoft_stripe_key );
+		$stripe->setApiVersion( '2019-12-03' );
 
 		if ( ! isset( $_SERVER['HTTPS'] ) ) {
 			$this->ws_gateway->parse_woocommerce_notices( 'There is something that is preventing your connection from being secure.' );
