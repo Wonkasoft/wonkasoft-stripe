@@ -205,7 +205,7 @@ class Wonkasoft_Stripe_Public {
 			array(
 				'methods'  => array( 'GET', 'POST' ),
 				'callback' => array( $this, 'wonkasoft_rest_payment_endpoint_handler' ),
-			),
+			)
 		);
 	}
 
