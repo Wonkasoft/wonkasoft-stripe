@@ -236,7 +236,7 @@ class Wonkasoft_Stripe_Public {
 			'error'          => $error,
 		);
 
-		return new WP_REST_Response( $response );
+		// return new WP_REST_Response( $response );
 	}
 
 	/**
