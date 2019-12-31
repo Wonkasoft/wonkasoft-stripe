@@ -342,10 +342,10 @@
 				    headers: {'content-type': 'application/json'},
 				  } )
 				  .then(function(response) {
-				  	console.log( response );
 				    if (response.ok) {
 				      // Report to the browser that the payment was successful, prompting
 				      // it to close the browser payment interface.
+				  		console.log( response.json() );
 				      evt.complete('success');
 				    } else {
 				      // Report to the browser that the payment failed, prompting it to
