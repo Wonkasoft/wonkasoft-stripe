@@ -221,16 +221,16 @@ class Wonkasoft_Stripe_Public {
 		$ev         = wp_unslash( $parameters['this_ev'] );
 
 		// $order_id       = WC()->wc_create_order();
-		$payment_method = sanitize_text_field( $parameters['payment_method'] );
-		$payment_token  = sanitize_text_field( $parameters['token'] );
-		$error          = new WP_Error();
-		$response       = array(
-			'payment_method' => $payment_method,
-			'order_id'       => $order_id,
-			'payment_token'  => $payment_token,
-			'ev'             => $ev,
-			'error'          => $error,
-		);
+		// $payment_method = sanitize_text_field( $parameters['payment_method'] );
+		// $payment_token  = sanitize_text_field( $parameters['token'] );
+		// $error          = new WP_Error();
+		// $response       = array(
+		// 'payment_method' => $payment_method,
+		// 'order_id'       => $order_id,
+		// 'payment_token'  => $payment_token,
+		// 'ev'             => $ev,
+		// 'error'          => $error,
+		// );
 
 		return wp_send_json_success( $parameters );
 	}
