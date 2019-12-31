@@ -2,7 +2,7 @@
 ( function( $ ) {
 	'use strict';
 
-	if ( document.querySelector( 'body.woocommerce-checkout' ) ) 
+	if ( document.querySelector( 'form[name="checkout"]' ) ) 
 	{
 		var stripe = Stripe( WS_STRIPE.stripe.key, {
 			'stripeAccount': WS_STRIPE.stripe.account_id,
@@ -334,16 +334,38 @@
 					} );												
 				} );
 
-				paymentRequest.on( 'source', function( evt ) {
-						console.log(evt);
-					$.when( wonkasoft_stripe_payment_request.processSource( evt, paymentRequestType ) ).then( function( response ) {
-						if ( 'success' === response.result ) {
-							wonkasoft_stripe_payment_request.completePayment( evt, response.redirect );
-						} else {
-							wonkasoft_stripe_payment_request.abortPayment( evt, response.messages );
-						}
-					} );
-				} );
+				paymentRequest.on('token', function(evt) {
+				  // Send the token to your server to charge it!
+				  fetch( WS_STRIPE.ws_charge_endpoint, {
+				    method: 'POST',
+				    body: JSON.stringify({token: evt.token.id}),
+				    headers: {'content-type': 'application/json'},
+				  } )
+				  .then(function(response) {
+				  	console.log( response );
+				    if (response.ok) {
+				      // Report to the browser that the payment was successful, prompting
+				      // it to close the browser payment interface.
+				      evt.complete('success');
+				    } else {
+				      // Report to the browser that the payment failed, prompting it to
+				      // re-show the payment interface, or show an error message and close
+				      // the payment interface.
+				      evt.complete('fail');
+				    }
+				  });
+				});
+
+				// paymentRequest.on( 'source', function( evt ) {
+				// 		console.log(evt);
+				// 	$.when( wonkasoft_stripe_payment_request.processSource( evt, paymentRequestType ) ).then( function( response ) {
+				// 		if ( 'success' === response.result ) {
+				// 			wonkasoft_stripe_payment_request.completePayment( evt, response.redirect );
+				// 		} else {
+				// 			wonkasoft_stripe_payment_request.abortPayment( evt, response.messages );
+				// 		}
+				// 	} );
+				// } );
 			},
 
 			/**
