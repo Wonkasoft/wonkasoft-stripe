@@ -136,6 +136,7 @@ class Wonkasoft_Stripe_Public {
 				'ws_ajax'            => str_replace( '/aperabags.com', '', get_site_url() ) . WC_AJAX::get_endpoint( '%%endpoint%%' ),
 				'ws_charge_endpoint' => esc_url( rest_url( '/wonkasoft/v2' ) . '/wonkasoft-stripe-payment/' ),
 				'stripe'             => array(
+					'mode'       => $this->ws_gateway->get_option( 'payment_method' ),
 					'key'        => $this->ws_pk,
 					'account_id' => $this->ws_stripe_account_id,
 					'btns'       => $this->add_wonkasoft_stripe_buttons(),
@@ -280,7 +281,7 @@ class Wonkasoft_Stripe_Public {
 		}
 
 		$stripe = new \Stripe\Stripe();
-		\Stripe\Stripe::setAppInfo(
+		$stripe->setAppInfo(
 			'Wonkasoft Stripe for WooCommerce',
 			$this->version,
 			'https://wonkasoft.com/wonkasoft-stripe',

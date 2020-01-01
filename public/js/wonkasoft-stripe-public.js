@@ -359,20 +359,18 @@
 				      
 				      evt.complete('success');
 
-				      if ( 'charge' === response.data.object ) {
-					      paymentRequest.on( 'source', function( evt ) {
-					      	$.when( wonkasoft_stripe_payment_request.processSource( evt, paymentRequestType ) ).then( function( response ) {
-					      		if ( 'success' === response.result ) {
-					      			wonkasoft_stripe_payment_request.completePayment( evt, response.redirect );
-					      		} else {
-					      			wonkasoft_stripe_payment_request.abortPayment( evt, response.messages );
-					      		}
-					      	} );
-					      } );
-				      }
-
 				  });
 				});
+	      
+	      paymentRequest.on( 'source', function( evt ) {
+	      	$.when( wonkasoft_stripe_payment_request.processSource( evt, paymentRequestType ) ).then( function( response ) {
+	      		if ( 'success' === response.result ) {
+	      			wonkasoft_stripe_payment_request.completePayment( evt, response.redirect );
+	      		} else {
+	      			wonkasoft_stripe_payment_request.abortPayment( evt, response.messages );
+	      		}
+	      	} );
+	      } );
 
 			},
 
@@ -387,16 +385,22 @@
 			}
 		};
 
-		wonkasoft_stripe_payment_request.init();
-
 		// We need to refresh payment request data when total is updated.
 		$( document.body ).on( 'updated_cart_totals', function() {
 			wonkasoft_stripe_payment_request.init();
+			if ( 'express' === WS_STRIPE.stripe.mode ) 
+			{
+				document.querySelector( 'li.payment_method_wonkasoft_stripe' ).remove();
+			}
 		} );
 
 		// We need to refresh payment request data when total is updated.
 		$( document.body ).on( 'updated_checkout', function() {
 			wonkasoft_stripe_payment_request.init();
+			if ( 'express' === WS_STRIPE.stripe.mode ) 
+			{
+				document.querySelector( 'li.payment_method_wonkasoft_stripe' ).remove();
+			}
 		} );
 	}
 

@@ -34,3 +34,7 @@ div#wonkasoft-payment-request-button button#apple-pay-btn {
 	height: 32px;
 	color: #fff;
 }
+
+li.payment_method_wonkasoft_stripe .wonka-payment-method-icon img {
+	max-width: 25px;
+}
