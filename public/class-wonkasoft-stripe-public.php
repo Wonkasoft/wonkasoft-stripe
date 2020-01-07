@@ -302,6 +302,7 @@ class Wonkasoft_Stripe_Public {
 		$current_domain = str_replace( 'https://', '', get_site_url() );
 
 		try {
+			\Stripe\Stripe::setApiKey( $this->ws_gateway->get_option( 'live_secret_key' ) );
 			\Stripe\ApplePayDomain::create(
 				array(
 					'domain_name' => $current_domain,
