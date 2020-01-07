@@ -283,6 +283,7 @@
 
 				// Check the availability of the Payment Request API first.
 	            paymentRequest.canMakePayment().then( function( result ) {
+                  	console.log(result);
 	              if ( result ) {
 	              	paymentRequestType = result.applePay ? 'apple_pay' : 'payment_request_api';
 	                  if ( null !== WS_STRIPE.stripe.btns.gpay ) 
@@ -299,7 +300,6 @@
 	                  }
 	                  if ( true === result.applePay ) 
 	                  {
-	                  	console.log(result);
 	                    document.querySelector( '#wonkasoft-payment-request-button' ).innerHTML = WS_STRIPE.stripe.btns.applepay;
 	                    document.querySelector( '#apple-pay-btn' ).addEventListener( 'click', function( e ) 
 	                        {
