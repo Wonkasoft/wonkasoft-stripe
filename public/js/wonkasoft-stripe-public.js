@@ -299,7 +299,8 @@
 	                  }
 	                  if ( true === result.applePay ) 
 	                  {
-	                      document.querySelector( '#wonkasoft-payment-request-button' ).innerHTML = WS_STRIPE.stripe.btns.applepay;
+	                  	console.log(result);
+	                    document.querySelector( '#wonkasoft-payment-request-button' ).innerHTML = WS_STRIPE.stripe.btns.applepay;
 	                    document.querySelector( '#apple-pay-btn' ).addEventListener( 'click', function( e ) 
 	                        {
 	                            var target = e.target;

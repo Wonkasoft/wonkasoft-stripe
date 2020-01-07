@@ -309,8 +309,10 @@ class Wonkasoft_Stripe_Public {
 				)
 			);
 
+			Wonkasoft_Stripe_Logger::log( 'Your domain has been verified with Apple Pay!' );
 		} catch ( Exception $e ) {
 			$this->ws_gateway->parse_woocommerce_notices( $e );
+			Wonkasoft_Stripe_Logger::log( 'Error: ' . $e->getMessage() );
 		}
 
 		$this->ws_gateway->parse_buttons_on_hook();
