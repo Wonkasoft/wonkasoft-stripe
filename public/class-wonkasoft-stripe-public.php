@@ -230,7 +230,6 @@ class Wonkasoft_Stripe_Public {
 			$wonkasoft_stripe_key = $gateway->get_option( 'live_secret_key' );
 		}
 
-		// $order_id       = WC()->wc_create_order();
 		\Stripe\Stripe::setAppInfo(
 			'Wonkasoft Stripe for WooCommerce',
 			$this->version,
@@ -280,8 +279,7 @@ class Wonkasoft_Stripe_Public {
 			$wonkasoft_stripe_key = $this->ws_gateway->get_option( 'live_secret_key' );
 		}
 
-		$stripe = new \Stripe\Stripe();
-		$stripe->setAppInfo(
+		\Stripe\Stripe::setAppInfo(
 			'Wonkasoft Stripe for WooCommerce',
 			$this->version,
 			'https://wonkasoft.com/wonkasoft-stripe',
@@ -292,8 +290,8 @@ class Wonkasoft_Stripe_Public {
 			$this->ws_gateway->parse_woocommerce_notices( 'Your Stripe Api Key has not been set in the Wonkasoft Stripe settings.' );
 		}
 
-		$stripe->setApiKey( $wonkasoft_stripe_key );
-		$stripe->setApiVersion( '2019-12-03' );
+		\Stripe\Stripe::setApiKey( $wonkasoft_stripe_key );
+		\Stripe\Stripe::setApiVersion( '2019-12-03' );
 
 		if ( ! isset( $_SERVER['HTTPS'] ) ) {
 			$this->ws_gateway->parse_woocommerce_notices( 'There is something that is preventing your connection from being secure.' );
