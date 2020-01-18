@@ -179,6 +179,8 @@ class Wonkasoft_Stripe {
 		$this->loader->add_action( 'init', $plugin_admin, 'wonkasoft_stripe_ajax_requests' );
 
 		$this->loader->add_filter( 'woocommerce_payment_gateways', $plugin_admin, 'add_wonkasoft_stripe_gateways' );
+		$this->loader->add_filter( 'plugin_action_links_' . WONKASOFT_STRIPE_BASENAME, 'wonkasoft_action_link_filter', 10, 1 );
+		$this->loader->add_filter( 'plugin_row_meta', 'wonkasoft_plugin_row_meta_filter', 10, 2 );
 	}
 
 	/**
