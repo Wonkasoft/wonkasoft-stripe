@@ -152,8 +152,7 @@ class Wonkasoft_Stripe_Admin {
 	 */
 	public function wonkasoft_action_link_filter( $links ) {
 		$links[] = '<a href="' . get_admin_url() . '" target="_self">Settings</a>';
-		$links[] = '<a href="https://paypal.me/Wonkasoft" target="blank"><img src="' . plugins_url( '../img/wonka-logo.svg', __FILE__ ) . '" style="width: 20px; height: 20px; display: inline-block;
-		    vertical-align: text-top; float: none;" /></a>';
+		$links[] = '<a href="https://paypal.me/Wonkasoft" target="blank"><img src="' . plugins_url( '../img/wonka-logo.svg', __FILE__ ) . '" style="width: 20px; height: 20px; display: inline-block; vertical-align: text-top; float: none;" /></a>';
 		return $links;
 	}
 
@@ -165,7 +164,7 @@ class Wonkasoft_Stripe_Admin {
 	 * @return array $links returns array of action links for the plugin.
 	 */
 	public function wonkasoft_plugin_row_meta_filter( $links, $file ) {
-		$links[] = '<a href="' . get_admin_url( null, 'admin.php?page=wc-settings&tab=checkout&section=wonkasoft_stripe' ) . '" target="_self">Settings</a>';
+		$links[] = '<a href="' . get_admin_url() . '" target="_self">Settings</a>';
 		$links[] = '<a href="https://paypal.me/Wonkasoft" target="blank">Donate <img src="' . plugins_url( '../img/wonka-logo.svg', __FILE__ ) . '" style="width: 20px; height: 20px; display: inline-block; vertical-align: text-top;" /></a>';
 		return $links;
 	}
