@@ -394,15 +394,6 @@
 				document.querySelector( 'li.payment_method_wonkasoft_stripe' ).remove();
 			}
 		} );
-
-		// We need to refresh payment request data when total is updated.
-		$( document.body ).on( 'updated_checkout', function() {
-			wonkasoft_stripe_payment_request.init();
-			if ( 'express' === WS_STRIPE.stripe.mode ) 
-			{
-				document.querySelector( 'li.payment_method_wonkasoft_stripe' ).remove();
-			}
-		} );
 	}
 
 })( jQuery );
