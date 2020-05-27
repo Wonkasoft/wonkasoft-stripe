@@ -238,7 +238,7 @@ class Wonkasoft_Stripe_Public {
 		);
 
 		\Stripe\Stripe::setApiKey( $wonkasoft_stripe_key );
-		\Stripe\Stripe::setApiVersion( '2019-12-03' );
+		\Stripe\Stripe::setApiVersion( '2020-03-02' );
 
 		$current_domain = str_replace( 'https://', '', get_site_url() );
 

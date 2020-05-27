@@ -283,7 +283,7 @@
 
 				// Check the availability of the Payment Request API first.
 	            paymentRequest.canMakePayment().then( function( result ) {
-                  	console.log(result);
+	            	console.log( result );
 	              if ( result ) {
 	              	paymentRequestType = result.applePay ? 'apple_pay' : 'payment_request_api';
 	                  if ( null !== WS_STRIPE.stripe.btns.gpay ) 
@@ -295,6 +295,12 @@
 	                            if ( 'BUTTON' === target.nodeName ) 
 	                            {
 	                                paymentRequest.show();
+	                                if ( document.querySelector( '.row.wonka-row-express-checkout-btns') ) {
+	                                	document.querySelector( '.row.wonka-row-express-checkout-btns').style.display = 'flex';
+	                                	setTimeout( function() {
+	                                		document.querySelector( '.row.wonka-row-express-checkout-btns').style.opacity = '1';
+	                                	}, 200 );
+	                                }
 	                            }
 	                        } );
 	                  }
@@ -307,6 +313,12 @@
 	                            if ( 'BUTTON' === target.nodeName ) 
 	                            {
 	                                paymentRequest.show();
+	                                if ( document.querySelector( '.row.wonka-row-express-checkout-btns') ) {
+	                                	document.querySelector( '.row.wonka-row-express-checkout-btns').style.display = 'flex';
+	                                	setTimeout( function() {
+	                                		document.querySelector( '.row.wonka-row-express-checkout-btns').style.opacity = '1';
+	                                	}, 200 );
+	                                }
 	                            }
 	                        } );
 	                  }
