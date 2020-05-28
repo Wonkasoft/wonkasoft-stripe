@@ -402,10 +402,6 @@
 		$( document.body ).on( 'update_checkout', function( e ) {
 			console.log( e );
 			wonkasoft_stripe_payment_request.init();
-			if ( 'express' === WS_STRIPE.stripe.mode ) 
-			{
-				document.querySelector( 'li.payment_method_wonkasoft_stripe' ).remove();
-			}
 		} );
 	}
 
