@@ -291,7 +291,7 @@ class Wonkasoft_Stripe_Public {
 		}
 
 		\Stripe\Stripe::setApiKey( $wonkasoft_stripe_key );
-		\Stripe\Stripe::setApiVersion( '2019-12-03' );
+		\Stripe\Stripe::setApiVersion( '2020-03-02' );
 
 		if ( ! isset( $_SERVER['HTTPS'] ) ) {
 			$this->ws_gateway->parse_woocommerce_notices( 'There is something that is preventing your connection from being secure.' );
@@ -325,10 +325,6 @@ class Wonkasoft_Stripe_Public {
 	 */
 	public function wonkasoft_stripe_check_for_express_only( $available_gateways ) {
 		$wonkasoft_stripe_payment_method = $this->ws_gateway->get_option( 'payment_method' );
-
-		// if ( 'express' === $wonkasoft_stripe_payment_method && array_key_exists( 'wonkasoft_stripe', $available_gateways ) ) {
-		// unset( $available_gateways['wonkasoft_stripe'] );
-		// }
 
 		return $available_gateways;
 	}

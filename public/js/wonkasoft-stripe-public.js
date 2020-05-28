@@ -399,7 +399,8 @@
 		};
 
 		// We need to refresh payment request data when total is updated.
-		$( document.body ).on( 'updated_cart_totals', function() {
+		$( document.body ).on( 'updated_cart_totals', function( e ) {
+			console.log( e );
 			wonkasoft_stripe_payment_request.init();
 			if ( 'express' === WS_STRIPE.stripe.mode ) 
 			{
