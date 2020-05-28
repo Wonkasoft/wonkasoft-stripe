@@ -397,12 +397,12 @@
 			 */
 			init: function() {
 				wonkasoft_stripe_payment_request.getCartDetails();
+				console.log('getCartDetails');
 			}
 		};
 
 		// We need to refresh payment request data when total is updated.
 		$( document.body ).on( 'update_checkout', function( e ) {
-			console.log( e );
 			wonkasoft_stripe_payment_request.init();
 		} );
 	}
