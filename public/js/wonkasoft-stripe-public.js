@@ -28,6 +28,7 @@
 				var data = {
 					security: WS_STRIPE.nonces.ws_request
 				};
+				console.log( data );
 
 				$.ajax( {
 					type:    'POST',
@@ -35,6 +36,7 @@
 					url:     wonkasoft_stripe_payment_request.getAjaxURL( 'get_cart_details' ),
 					success: function( response ) {
 						wonkasoft_stripe_payment_request.startPaymentRequest( response );
+						console.log( response );
 					}
 				} );
 			},
