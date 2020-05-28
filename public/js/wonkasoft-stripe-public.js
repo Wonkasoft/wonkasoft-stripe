@@ -265,7 +265,7 @@
 			startPaymentRequest: function( cart ) {
 				var paymentDetails,
 					options;
-
+				console.log( cart );
 				options = {
 					total: cart.order_data.total,
 					currency: cart.order_data.currency,
