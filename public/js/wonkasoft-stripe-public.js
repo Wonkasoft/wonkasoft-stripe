@@ -297,14 +297,17 @@
 	                            if ( 'BUTTON' === target.nodeName ) 
 	                            {
 	                                paymentRequest.show();
-	                                if ( document.querySelector( '.row.wonka-row-express-checkout-btns') ) {
-	                                	document.querySelector( '.row.wonka-row-express-checkout-btns').style.display = 'flex';
-	                                	setTimeout( function() {
-	                                		document.querySelector( '.row.wonka-row-express-checkout-btns').style.opacity = '1';
-	                                	}, 200 );
-	                                }
 	                            }
 	                        } );
+                        
+                        if ( document.querySelector( '.row.wonka-row-express-checkout-btns') ) {
+                        	document.querySelector( '.row.wonka-row-express-checkout-btns').style.display = 'flex';
+                        	setTimeout( function() {
+                        		document.querySelector( '.row.wonka-row-express-checkout-btns').style.height = '158px';
+                        		document.querySelector( '.row.wonka-row-express-checkout-btns').style.opacity = '1';
+                        	}, 200 );
+                        }
+
 	                  }
 	                  if ( true === result.applePay ) 
 	                  {
@@ -315,14 +318,16 @@
 	                            if ( 'BUTTON' === target.nodeName ) 
 	                            {
 	                                paymentRequest.show();
-	                                if ( document.querySelector( '.row.wonka-row-express-checkout-btns') ) {
-	                                	document.querySelector( '.row.wonka-row-express-checkout-btns').style.display = 'flex';
-	                                	setTimeout( function() {
-	                                		document.querySelector( '.row.wonka-row-express-checkout-btns').style.opacity = '1';
-	                                	}, 200 );
-	                                }
 	                            }
 	                        } );
+                        
+                        if ( document.querySelector( '.row.wonka-row-express-checkout-btns') ) {
+                        	document.querySelector( '.row.wonka-row-express-checkout-btns').style.display = 'flex';
+                        	setTimeout( function() {
+                        		document.querySelector( '.row.wonka-row-express-checkout-btns').style.height = '158px';
+                        		document.querySelector( '.row.wonka-row-express-checkout-btns').style.opacity = '1';
+                        	}, 200 );
+                        }
 	                  }
 	              } else {
 	                document.getElementById('wonkasoft-payment-request-button').style.display = 'none';
