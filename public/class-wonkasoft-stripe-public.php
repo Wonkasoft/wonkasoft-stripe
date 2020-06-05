@@ -129,7 +129,7 @@ class Wonkasoft_Stripe_Public {
 		 * class.
 		 */
 
-		if ( is_checkout() ) {
+		if ( is_checkout() && 'yes' === $this->ws_gateway->get_option( 'enabled' ) ) {
 			wp_enqueue_script( 'stripe', 'https://js.stripe.com/v3/', '', '3.0', true );
 			wp_enqueue_script( $this->plugin_name . 'public-js', plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-public.js', array( 'jquery' ), $this->version, true );
 			$wonkasoft_stripe_params = array(
@@ -158,8 +158,6 @@ class Wonkasoft_Stripe_Public {
 				'WS_STRIPE',
 				apply_filters( 'wonkasoft_stripe_params', $wonkasoft_stripe_params )
 			);
-		} else {
-			wp_enqueue_script( $this->plugin_name . 'public-js', plugin_dir_url( __FILE__ ) . 'js/wonkasoft-stripe-public.js', array( 'jquery' ), $this->version, true );
 		}
 
 	}

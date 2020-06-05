@@ -73,7 +73,6 @@ class Wonkasoft_Stripe_WC_Payment_Gateway extends WC_Payment_Gateway {
 	public function __construct() {
 
 		$this->id                 = 'wonkasoft_stripe';
-		$this->icon               = WONKASOFT_STRIPE_URL . 'admin/img/ws-stripe-preview.jpg';
 		$this->has_fields         = true;
 		$this->method_title       = 'Stripe Payments Express';
 		$this->method_description = 'Add express payment options for your customers by the power of Stripe.';
@@ -88,10 +87,20 @@ class Wonkasoft_Stripe_WC_Payment_Gateway extends WC_Payment_Gateway {
 
 		update_option( 'wonkasoft_stripe_settings', $this->current_settings, $this->current_settings );
 		$this->supports = array(
-			'subscriptions',
 			'products',
-			'tokenization',
 			'refunds',
+			'tokenization',
+			'add_payment_method',
+			'subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_date_changes',
+			'subscription_payment_method_change',
+			'subscription_payment_method_change_customer',
+			'subscription_payment_method_change_admin',
+			'multiple_subscriptions',
 			'pre-orders',
 		);
 

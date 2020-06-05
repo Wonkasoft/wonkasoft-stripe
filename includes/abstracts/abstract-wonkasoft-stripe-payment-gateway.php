@@ -194,14 +194,14 @@ abstract class Wonkasoft_Stripe_WC_Payment_Gateway_CC extends WC_Payment_Gateway
 	 */
 	public function payment_icons() {
 		return apply_filters(
-			'wc_stripe_payment_icons',
+			'wonkasoft_wc_stripe_payment_icons',
 			array(
 				'visa'       => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/visa.svg" class="stripe-visa-icon stripe-icon" alt="Visa" />',
 				'amex'       => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/amex.svg" class="stripe-amex-icon stripe-icon" alt="American Express" />',
 				'mastercard' => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/mastercard.svg" class="stripe-mastercard-icon stripe-icon" alt="Mastercard" />',
 				'discover'   => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/discover.svg" class="stripe-discover-icon stripe-icon" alt="Discover" />',
-				'diners'     => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/diners.svg" class="stripe-diners-icon stripe-icon" alt="Diners" />',
-				'jcb'        => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/jcb.svg" class="stripe-jcb-icon stripe-icon" alt="JCB" />',
+				// 'diners'     => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/diners.svg" class="stripe-diners-icon stripe-icon" alt="Diners" />',
+				// 'jcb'        => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/jcb.svg" class="stripe-jcb-icon stripe-icon" alt="JCB" />',
 				'alipay'     => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/alipay.svg" class="stripe-alipay-icon stripe-icon" alt="Alipay" />',
 				'wechat'     => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/wechat.svg" class="stripe-wechat-icon stripe-icon" alt="Wechat Pay" />',
 				'bancontact' => '<img src="' . WONKASFT_STRIPE_PLUGIN_URL . '/assets/images/bancontact.svg" class="stripe-bancontact-icon stripe-icon" alt="Bancontact" />',

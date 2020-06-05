@@ -28,7 +28,6 @@
 				var data = {
 					security: WS_STRIPE.nonces.ws_request
 				};
-				console.log( data );
 
 				$.ajax( {
 					type:    'POST',
@@ -36,7 +35,6 @@
 					url:     wonkasoft_stripe_payment_request.getAjaxURL( 'get_cart_details' ),
 					success: function( response ) {
 						wonkasoft_stripe_payment_request.startPaymentRequest( response );
-						console.log( response );
 					}
 				} );
 			},
@@ -267,7 +265,7 @@
 			startPaymentRequest: function( cart ) {
 				var paymentDetails,
 					options;
-				console.log( cart );
+
 				options = {
 					total: cart.order_data.total,
 					currency: cart.order_data.currency,
@@ -285,7 +283,6 @@
 
 				// Check the availability of the Payment Request API first.
 	            paymentRequest.canMakePayment().then( function( result ) {
-	            	console.log( result );
 	              if ( result ) {
 	              	paymentRequestType = result.applePay ? 'apple_pay' : 'payment_request_api';
 	                  if ( null !== WS_STRIPE.stripe.btns.gpay ) 
@@ -402,7 +399,6 @@
 			 */
 			init: function() {
 				wonkasoft_stripe_payment_request.getCartDetails();
-				console.log('getCartDetails');
 			}
 		};
 
